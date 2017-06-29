@@ -1,0 +1,14 @@
+Requirements
+
+Pull out games from pro players
+Can filter by champion, team, region
+display pro player photo, region, role in search
+
+Team has many players
+Players have many accounts?
+Accounts have many games > Or players have many games, have accounts in an array
+
+Games must show build, who they're playing against (if a pro, show pro as well as champ)
+Initial tab shows quick summary. Clicking on it will bring full game stats
+Certain win rates on specific champs for pros?
+Patch indicator on when game was played?
