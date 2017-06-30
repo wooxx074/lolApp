@@ -10,6 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 20170726201200) do
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -27,6 +28,12 @@ ActiveRecord::Schema.define(version: 20170726201200) do
   create_table "leagues", force: :cascade do |t|
     t.string   "name"
     t.string   "slug"
+=======
+ActiveRecord::Schema.define(version: 20170630211332) do
+
+  create_table "leagues", force: :cascade do |t|
+    t.string   "name"
+>>>>>>> Added new/edit/views to team and leagues, WIP
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
     t.string   "avatar_file_name"
@@ -36,6 +43,7 @@ ActiveRecord::Schema.define(version: 20170726201200) do
   end
 
   create_table "matches", force: :cascade do |t|
+<<<<<<< HEAD
     t.integer  "game_id",      limit: 8
     t.text     "match_info"
     t.text     "pros_in_game",           default: "--- []\n"
@@ -55,6 +63,21 @@ ActiveRecord::Schema.define(version: 20170726201200) do
     t.integer  "team_id"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
+=======
+    t.integer  "match_id"
+    t.text     "match_info"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "players", force: :cascade do |t|
+    t.string   "summonername"
+    t.string   "role"
+    t.string   "twitchtv"
+    t.integer  "team_id"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+>>>>>>> Added new/edit/views to team and leagues, WIP
     t.string   "avatar_file_name"
     t.string   "avatar_content_type"
     t.integer  "avatar_file_size"
@@ -65,7 +88,10 @@ ActiveRecord::Schema.define(version: 20170726201200) do
   create_table "teams", force: :cascade do |t|
     t.integer  "league_id"
     t.string   "name"
+<<<<<<< HEAD
     t.string   "slug"
+=======
+>>>>>>> Added new/edit/views to team and leagues, WIP
     t.datetime "created_at",          null: false
     t.datetime "updated_at",          null: false
     t.string   "avatar_file_name"

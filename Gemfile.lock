@@ -212,4 +212,8 @@ DEPENDENCIES
   web-console (>= 3.3.0)
 
 BUNDLED WITH
+<<<<<<< HEAD
    1.15.1
+=======
+   1.14.4
+>>>>>>> Added new/edit/views to team and leagues, WIP
