@@ -1,0 +1,18 @@
+<%= form_for @team do |t| %>
+    <div class="form-group">
+        <%= t.label :name, 'Team Name' %>
+        <%= t.text_field :name, class: 'form-control' %>
+    </div>
+    <% leagueArray %>
+    <div class="form-group">
+        <%= t.label :league_id %><br/>
+        <%= t.select(:league_id, League.all.collect {|l| [l.name, l.id]})%>
+    </div>
+    <div class="form-group">
+        <%= t.label :avatar %>
+        <%= t.file_field :avatar, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+        <%= t.submit "Update team", class: 'btn btn-primary' %>
+    </div>
+<% end %>

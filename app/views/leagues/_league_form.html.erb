@@ -1,0 +1,13 @@
+<%= form_for @league do |t| %>
+    <div class="form-group">
+        <%= t.label :name %>
+        <%= t.text_field :name, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+        <%= t.label :avatar %>
+        <%= t.file_field :avatar, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+        <%= t.submit "Update League", class: 'btn btn-primary' %>
+    </div>
+<% end %>

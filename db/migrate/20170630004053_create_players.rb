@@ -30,4 +30,12 @@ class CreatePlayers < ActiveRecord::Migration[5.0]
       t.timestamps
     end
   end
+  
+  def change
+    create_table :matches do |t|
+      t.integer :match_id
+      t.text 'match_info'
+      t.timestamps
+    end
+  end
 end
