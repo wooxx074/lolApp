@@ -1,5 +1,4 @@
 class LeaguesController < ApplicationController
-<<<<<<< HEAD
   def index
     
   end
@@ -12,12 +11,6 @@ class LeaguesController < ApplicationController
     @league = League.new
   end
 
-=======
-  def new
-    @league = League.new
-  end
-  
->>>>>>> Added new/edit/views to team and leagues, WIP
   def create
     # Mass assignment of form fields to create teams
     @league = League.new(league_params)
@@ -33,6 +26,9 @@ class LeaguesController < ApplicationController
     end
   end
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Added show/view/edit pages to Leagues, Teams, Controllers. WIP
 
   def edit
     @league = League.find(params[:id])
@@ -50,15 +46,11 @@ class LeaguesController < ApplicationController
     end
   end
 
+
 =======
-  
->>>>>>> Added new/edit/views to team and leagues, WIP
+>>>>>>> Added show/view/edit pages to Leagues, Teams, Controllers. WIP
   private
   def league_params
     params.require(:league).permit(:name, :avatar)
   end
-<<<<<<< HEAD
 end
-=======
-end
->>>>>>> Added new/edit/views to team and leagues, WIP

@@ -31,6 +31,7 @@ class PlayersController < ApplicationController
     end
   end
 
+
   def show
     @player = Player.friendly.find( params[:id].downcase ) #friendly find uses name as slug for url
     match_list = []

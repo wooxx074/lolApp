@@ -3,10 +3,7 @@
         <%= t.label :name, 'Team Name' %>
         <%= t.text_field :name, class: 'form-control' %>
     </div>
-<<<<<<< HEAD
-=======
-    <% leagueArray %>
->>>>>>> Added new/edit/views to team and leagues, WIP
+
     <div class="form-group">
         <%= t.label :league_id %><br/>
         <%= t.select(:league_id, League.all.collect {|l| [l.name, l.id]})%>
@@ -18,8 +15,4 @@
     <div class="form-group">
         <%= t.submit "Update team", class: 'btn btn-primary' %>
     </div>
-<<<<<<< HEAD
 <% end %>
-=======
-<% end %>
->>>>>>> Added new/edit/views to team and leagues, WIP

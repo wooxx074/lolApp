@@ -23,8 +23,14 @@
 # Ignore application configuration
 /config/application.yml
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # Ignore application configuration
 /config/application.yml
 =======
 >>>>>>> Added new/edit/views to team and leagues, WIP
+=======
+
+# Ignore application configuration
+/config/application.yml
+>>>>>>> Added show/view/edit pages to Leagues, Teams, Controllers. WIP
