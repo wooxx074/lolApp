@@ -3,7 +3,6 @@
         <%= t.label :name, 'Team Name' %>
         <%= t.text_field :name, class: 'form-control' %>
     </div>
-    <% leagueArray %>
     <div class="form-group">
         <%= t.label :league_id %><br/>
         <%= t.select(:league_id, League.all.collect {|l| [l.name, l.id]})%>

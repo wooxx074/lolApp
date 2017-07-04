@@ -19,13 +19,12 @@ class TeamsController < ApplicationController
       redirect_to new_team_path
     end
   end
-  
+
   # GET to /teams/:id/edit
   def edit
     @team = Team.find(params[:id])
-    
   end
-  
+
   # PUT to /teams/:id
   def update
     # Retrieve team from database
@@ -38,7 +37,7 @@ class TeamsController < ApplicationController
       render action :edit
     end
   end
-  
+
   private
   def team_params
     params.require(:team).permit(:name, :league_id, :avatar)

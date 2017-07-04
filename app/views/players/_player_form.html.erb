@@ -1,0 +1,19 @@
+<%= form_for @player do |t| %>
+    <div class="form-group">
+        <%= t.label :name, 'Player Name' %>
+        <%= t.text_field :summonername, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+        <%= t.label :team %><br/>
+        <%= t.select(:team_id, Team.all.collect {|t| [t.name, t.id]})%>
+    </div>
+    <div class="form-group">
+        <%= t.label :avatar %>
+        <%= t.file_field :avatar, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+        <%= t.submit "Update Player", class: 'btn btn-primary' %>
+    </div>
+<% end %>
+
+<%= render 'layouts/edit_buttons'%>
