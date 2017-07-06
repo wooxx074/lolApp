@@ -48,7 +48,7 @@ gem 'figaro', '~> 1.1.1'
 # Use Paperclip for image upload
 gem 'paperclip', '~> 4.3.6'
 #JSON/httparty dependencies
-gem 'json', '1.8'
+gem 'json', '~> 1.8'
 gem 'multi_xml', '~> 0.5.2'
 # Use httparty to pull JSON items
 gem 'httparty', '~> 0.15.5'
