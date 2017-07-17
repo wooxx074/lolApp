@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170630211332) do
+ActiveRecord::Schema.define(version: 20170717212418) do
 
   create_table "leagues", force: :cascade do |t|
     t.string   "name"
@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20170630211332) do
   end
 
   create_table "players", force: :cascade do |t|
-    t.string   "summonername"
+    t.text     "summonername"
     t.string   "role"
     t.string   "twitchtv"
     t.integer  "team_id"
@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 20170630211332) do
     t.string   "avatar_content_type"
     t.integer  "avatar_file_size"
     t.datetime "avatar_updated_at"
+    t.string   "name"
     t.index ["team_id"], name: "index_players_on_team_id"
   end
 

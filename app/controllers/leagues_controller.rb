@@ -1,4 +1,12 @@
 class LeaguesController < ApplicationController
+  def index
+    
+  end
+  
+  def show
+    
+  end
+
   def new
     @league = League.new
   end
@@ -26,7 +34,7 @@ class LeaguesController < ApplicationController
     # Retrieve team from database
     @league = Team.find( params[:id])
     # Mass assign edited profile attributes and update
-    if @league.update_attributes(team_params)
+    if @league.update_attributes(league_params)
       flash[:success] = "#{@league.name} updated!"
       redirect_to edit_league_path(id: params[:id])
     else
