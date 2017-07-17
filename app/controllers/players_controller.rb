@@ -22,6 +22,7 @@ class PlayersController < ApplicationController
     # Saving team into database
     if @player.save
       name = params[:player][:name]
+
       # flash if successfully saved
       flash[:success] = "#{name} has been saved."
       redirect_to new_player_path
