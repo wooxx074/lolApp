@@ -1,5 +1,5 @@
 module MatchHelper
-  def load_match
+  def load_matches
     
   end
 end

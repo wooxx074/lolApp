@@ -3,9 +3,14 @@
         <%= t.label :name, 'Name' %>
         <%= t.text_field :name, class: 'form-control' %>
     </div>
+    <!-- Pulls the hash keys only from summoner names, turns it into string -->
+    <% summonerHash = JSON.parse @player.summonername.to_s.gsub('=>', ':') %>
+    <% summonerNameList = "" %>
+    <% summonerHash.each do |p, v| summonerNameList << "#{p}, " end %>
+    <% summonerNameList.chomp!(", ") %>
     <div class="form-group">
         <%= t.label :summonername, 'Summoner Name' %>
-        <%= t.text_field :summonername, class: 'form-control' %>
+        <%= t.text_field :summonername, class: 'form-control', value: summonerNameList %>
     </div>
     <div class="form-group">
         <%= t.label :role %><br/>
