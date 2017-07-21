@@ -1,6 +1,10 @@
 class PlayersController < ApplicationController
   include PlayerHelper
   
+  def set_player_params
+    @params = params[:player]
+  end
+  
   def new
     # Add new players
     @player = Player.new
@@ -30,7 +34,13 @@ class PlayersController < ApplicationController
   end
 
   def show
-
+    @player = Player.find( params[:id] )
+    match_list = []
+    @player.summonername.each do |sumname, accountId|
+      match_list << Match.select{|game| game.pros_in_game.include? accountId.to_s}
+      @match_short_list = match_list.take(5)
+    end
+    @match_short_list = @match_short_list.uniq
   end
 
   def edit

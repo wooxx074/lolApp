@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170717212418) do
+ActiveRecord::Schema.define(version: 20170721184626) do
 
   create_table "leagues", force: :cascade do |t|
     t.string   "name"
@@ -25,8 +25,11 @@ ActiveRecord::Schema.define(version: 20170717212418) do
   create_table "matches", force: :cascade do |t|
     t.integer  "match_id"
     t.text     "match_info"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.integer  "game_id",      limit: 8
+    t.text     "pros_in_game",           default: "--- []\n"
+    t.index ["game_id"], name: "index_matches_on_game_id", unique: true
   end
 
   create_table "players", force: :cascade do |t|
@@ -34,13 +37,14 @@ ActiveRecord::Schema.define(version: 20170717212418) do
     t.string   "role"
     t.string   "twitchtv"
     t.integer  "team_id"
-    t.datetime "created_at",          null: false
-    t.datetime "updated_at",          null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
     t.string   "avatar_file_name"
     t.string   "avatar_content_type"
     t.integer  "avatar_file_size"
     t.datetime "avatar_updated_at"
     t.string   "name"
+    t.datetime "last_regenerated_matches"
     t.index ["team_id"], name: "index_players_on_team_id"
   end
 

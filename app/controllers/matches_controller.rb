@@ -1,5 +1,5 @@
 class MatchesController < ApplicationController
-    def add_matches
-        
-    end
+  def add_matches
+
+  end
 end
