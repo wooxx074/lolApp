@@ -36,11 +36,19 @@ class PlayersController < ApplicationController
   def show
     @player = Player.find( params[:id] )
     match_list = []
+    match_short_list = []
+    @match_hash = Hash.new
     @player.summonername.each do |sumname, accountId|
-      match_list << Match.select{|game| game.pros_in_game.include? accountId.to_s}
-      @match_short_list = match_list.take(5)
+      match_list = Match.select{|game| game.pros_in_game.include? accountId.to_s}
+      match_short_list << match_list.take(5)
+      match_short_list = match_short_list.uniq #removes any duplicate entries in short list array
+      match_short_list.each do |match|
+      match_hash[accountId] = match
+      end
+      @sorted_matches = match_hash.sort_by {|id, match| match[0]["game_id"].to_i }.reverse!
     end
-    @match_short_list = @match_short_list.uniq
+     
+    
   end
 
   def edit

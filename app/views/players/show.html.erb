@@ -2,7 +2,21 @@
     <div class="row">
         <div class="col-md-12">
             <%= save_player_matches %>
-            <%= @match_short_list[2][0].match_info["gameVersion"].first(4) %>
+            <% @sorted_matches.each do |accountId, match| %>
+            <% patch = match[0]["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
+            <%= patch %>
+            <!-- Regex filtering above-->
+            <!-- [^.]* = as many non-period characters as possible-->
+            <!-- . = a period-->
+            <!-- [^.]* = as many non-period characters as possible-->
+            
+            <%= match[0]["match_info"]["gameCreation"] %>
+            <%= match[0]["match_info"]["gameId"] %>
+            <%= match[0]["game_id"] %>
+            <br/>
+            <% end %>
+            <ul><%= "Blue Team:" %></ul>
+            
         </div>
     </div>
 </div>
