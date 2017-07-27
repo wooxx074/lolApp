@@ -30,8 +30,7 @@ module PlayerHelper
     # If it has been 30 minutes since the last regeneration, proceed
     if @player.last_regenerated_matches.nil? or @player.last_regenerated_matches < (DateTime.now - 0.5.hours)
       # Find League by player's team ID
-      team = Team.find(@player.team_id).league_id
-      league = League.find(team)
+      league = League.find(@player.team.league_id)
       region = region_check(league.name) #Convert region to fit Riot API url
       # Will pull match history for each summonername listed in Player
       @player.summonername.each do |sumname, accountId|
@@ -46,9 +45,11 @@ module PlayerHelper
             if found_match.nil? #If not, add match info to Match model
               source = "https://#{region}.api.riotgames.com/lol/match/v3/matches/#{gameId}?api_key=#{ENV['riot_key']}"
               game_info = json_parse(source)
-              new_match = Match.new(match_info: game_info, game_id: gameId)
-              new_match.pros_in_game << "#{accountId}" #Adds current pro in the pool of pros participated in match
-              new_match.save
+              if game_info["status"].nil?
+                new_match = Match.new(match_info: game_info, game_id: gameId)
+                new_match.pros_in_game << "#{accountId}" #Adds current pro in the pool of pros participated in match
+                new_match.save
+              end
             else
               # If match was already in database (likely regenerated from other pro), 
               # add current pro in the pool of pros participated in match
@@ -59,9 +60,12 @@ module PlayerHelper
           end
           @player.last_regenerated_matches = DateTime.now #Update the time in which this was last regenerated
           @player.save
+          return "Updated" #Filler text to show method has been used
+        else
+          return "" #Return nothing if no match list has been generated
         end
       end
-      return "Updated" #Filler text to show method has been used
+      
     end
   end
 end

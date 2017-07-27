@@ -53,7 +53,7 @@ gem 'multi_xml', '~> 0.5.2'
 # Use httparty to pull JSON items
 gem 'httparty', '~> 0.15.5' #Currently using Net::HTTP instead, may not be necessary to keep
 # Use friendly ID for custom slugs in URL
-gem 'friendly_id', '~> 5.0.0'
+gem 'friendly_id', '~> 5.1.0'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

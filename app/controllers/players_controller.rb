@@ -2,7 +2,7 @@ class PlayersController < ApplicationController
   include PlayerHelper
   
   def set_player_params
-    @params = params[:player]
+    @params = params[:player].downcase
   end
   
   def new
@@ -13,10 +13,8 @@ class PlayersController < ApplicationController
   def create
     # Mass assignment of form fields to create teams
     @player = Player.new(player_params.except(:summonername))
-      summonerlist = params[:player][:summonername].split(", ")
-      teamId = params[:player][:team_id]
-      leagueId = Team.find(teamId).league_id
-      league = League.find(leagueId)
+      summonerlist = params[:player][:summonername].split(", ") #splits all summoner names as their own in array
+      league = League.find(@player.team.league_id)
       summonerlist.each do |smname|
         @player.summonername[smname] = retrieve_sumn_id(region_check(league.name), smname)
       end
@@ -34,39 +32,39 @@ class PlayersController < ApplicationController
   end
 
   def show
-    @player = Player.find( params[:id] )
+    @player = Player.friendly.find( params[:id].downcase ) #friendly find uses name as slug for url
     match_list = []
-    match_short_list = []
-    @match_hash = Hash.new
     @player.summonername.each do |sumname, accountId|
-      match_list = Match.select{|game| game.pros_in_game.include? accountId.to_s}
-      match_short_list << match_list.take(5)
-      match_short_list = match_short_list.uniq #removes any duplicate entries in short list array
-      match_short_list.each do |match|
-      match_hash[accountId] = match
+      if accountId == 111
+        puts "Error #{accountId} - players_controller def show"
+      else
+        account_matches = Match.select{|game| game.pros_in_game.include?(accountId.to_s)}
+        match_list = account_matches + match_list
+        match_list = match_list.uniq #removes any duplicate entries in short list array
       end
-      @sorted_matches = match_hash.sort_by {|id, match| match[0]["game_id"].to_i }.reverse!
     end
-     
-    
+    @sorted_matches = match_list.sort_by {|match| match["game_id"].to_i }.reverse!
   end
 
   def edit
-    @player = Player.find( params[:id] )
+    @player = Player.friendly.find( params[:id].downcase )
   end
 
   def update
     # Retrieve players from database
-    @player = Player.find( params[:id])
+    @player = Player.friendly.find( params[:id].downcase)
     updatedParams = player_params.clone
     summonerlist = params[:player][:summonername].split(", ")
-      teamId = params[:player][:team_id]
-      leagueId = Team.find(teamId).league_id
-      league = League.find(leagueId)
-      summonerHash = Hash.new
-      summonerlist.each do |smname|
-        summonerHash[smname] = retrieve_sumn_id(region_check(league.name), smname)
+    league = League.find(@player.team.league_id)
+    summonerHash = Hash.new
+    summonerlist.each do |smname|
+      accountId = retrieve_sumn_id(region_check(league.name), smname)
+      unless accountId == 111
+        summonerHash[smname] = accountId
+      else 
+        summonerHash[smname] = @player.summonername[smname]
       end
+    end
     updatedParams[:summonername] = summonerHash
     
     # Mass assign edited profile attributes and update

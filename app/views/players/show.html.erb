@@ -1,22 +1,19 @@
 <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <%= save_player_matches %>
-            <% @sorted_matches.each do |accountId, match| %>
-            <% patch = match[0]["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
-            <%= patch %>
-            <!-- Regex filtering above-->
-            <!-- [^.]* = as many non-period characters as possible-->
-            <!-- . = a period-->
-            <!-- [^.]* = as many non-period characters as possible-->
-            
-            <%= match[0]["match_info"]["gameCreation"] %>
-            <%= match[0]["match_info"]["gameId"] %>
-            <%= match[0]["game_id"] %>
+  <div class="row">
+    <div class="col-md-12">
+        <%= save_player_matches %>
+        <% unless @sorted_matches.nil? %>
+          <% @sorted_matches.each do |match| %>
+          <%= render '/matches/match_show_form', game: match %>
+
             <br/>
-            <% end %>
-            <ul><%= "Blue Team:" %></ul>
-            
-        </div>
+          <% end %>
+          <% else %>
+          <p>No current matches found</p>
+        <% end %>
+
+      <ul><%= "Blue Team:" %></ul>
+      
     </div>
+  </div>
 </div>

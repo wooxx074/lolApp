@@ -1,4 +1,7 @@
 class Player < ApplicationRecord
+  extend FriendlyId
+  friendly_id :name, use: :slugged
+  validates :name, :slug, presence: true
   serialize :summonername, Hash
   belongs_to :team
   has_attached_file :avatar, 
