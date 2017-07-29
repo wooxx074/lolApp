@@ -1,0 +1,12 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <% League.all.each do |league|%>
+                <div class="col-lg-6">
+                    <h2><%= league.name %></h2>
+                    <%= image_tag league.avatar.url, class: 'avatar-show-img' %>
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>

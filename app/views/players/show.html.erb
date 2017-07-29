@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+        <%= save_player_matches %>
+        <% unless @sorted_matches.nil? %>
+          <% @sorted_matches.each do |match| %>
+          <%= render '/matches/match_show_form', game: match %>
+
+            <br/>
+          <% end %>
+          <% else %>
+          <p>No current matches found</p>
+        <% end %>
+
+      <ul><%= "Blue Team:" %></ul>
+      
+    </div>
+  </div>
+</div>

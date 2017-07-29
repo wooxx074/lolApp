@@ -1,0 +1,24 @@
+    <!--Begin finding participant identities-->
+    <% @player.summonername.each do |smname, accountId| %>
+      <!--Find out which accountId is linked to this game-->
+      <% if game.pros_in_game.include? accountId.to_s %> 
+        <% game["match_info"]["participantIdentities"].each do |participant| -#Cycle through participants to find matching ID-%>
+          <% if participant["player"]["accountId"] == accountId %>
+            <%= participantId = participant["participantId"] -#If match, save for future reference-%>
+            <% break else next -#Break loop as soon as ID is found-%>
+          <% end %>
+        <% end %>
+        <% break -#Second break out of main loop after ID is found-%>
+      <% end %>
+    <% end %>
+    <!--End finding participant identities-->
+    <% patch = game["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
+    <%= "Patch #{patch}" %>
+    <!-- Regex filtering above-->
+    <!-- [^.]* = as many non-period characters as possible-->
+    <!-- . = a period-->
+    <!-- [^.]* = as many non-period characters as possible-->
+    
+    <%= game["match_info"]["gameCreation"] %>
+    <%= game["game_id"] %>
+    <br/>

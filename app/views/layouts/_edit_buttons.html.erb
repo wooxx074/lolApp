@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="well">
+      <% League.all.collect.each do |l| %>
+        <h2><%= link_to "#{l.name}", edit_league_path(l.id) %></h2>
+        <% l.teams.each do |team| %>
+          <%= link_to "#{team.name}", edit_team_path(team.id) %>
+        <% end %>
+      <% end %>
+      <br />
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="well">
+      <h3>PLAYERS</h3>
+      <% Player.all.collect.each do |player| %>
+        <div class="col-md-2">
+          <%= link_to "#{player.name}  ", edit_player_path(player.id) %>
+        </div>
+      <% end %>
+      <br/>
+      <br/>
+      <br/>
+    </div>
+  </div>
+</div>

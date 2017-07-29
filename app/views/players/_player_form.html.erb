@@ -1,0 +1,32 @@
+<%= form_for @player do |t| %>
+    <div class="form-group">
+        <%= t.label :name, 'Name' %>
+        <%= t.text_field :name, class: 'form-control' %>
+    </div>
+    <!-- Pulls the hash keys only from summoner names, turns it into string -->
+    <% summonerHash = JSON.parse @player.summonername.to_s.gsub('=>', ':') %>
+    <% summonerNameList = "" %>
+    <% summonerHash.each do |p, v| summonerNameList << "#{p}, " end %>
+    <% summonerNameList.chomp!(", ") %>
+    <div class="form-group">
+        <%= t.label :summonername, 'Summoner Name' %>
+        <%= t.text_field :summonername, class: 'form-control', value: summonerNameList %>
+    </div>
+    <div class="form-group">
+        <%= t.label :role %><br/>
+        <%= t.select(:role, ["","TOP", "JUNGLE", "MID", "ADC", "SUPPORT"]) %>
+    </div>
+    <div class="form-group">
+        <%= t.label :team %><br/>
+        <%= t.select(:team_id, Team.all.collect {|t| [t.name, t.id]})%>
+    </div>
+    <div class="form-group">
+        <%= t.label :avatar %>
+        <%= t.file_field :avatar, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+        <%= t.submit "Update Player", class: 'btn btn-primary' %>
+    </div>
+<% end %>
+
+<%= render 'layouts/edit_buttons'%>
