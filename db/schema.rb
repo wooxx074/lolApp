@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170726201200) do
+ActiveRecord::Schema.define(version: 20170728204904) do
 
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string   "slug",                      null: false
@@ -36,12 +36,19 @@ ActiveRecord::Schema.define(version: 20170726201200) do
   end
 
   create_table "matches", force: :cascade do |t|
-    t.integer  "game_id",      limit: 8
+    t.integer  "game_id",           limit: 8
     t.text     "match_info"
-    t.text     "pros_in_game",           default: "--- []\n"
-    t.text     "text",                   default: "--- []\n"
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.text     "pros_in_game",                default: "--- []\n"
+    t.text     "text",                        default: "--- []\n"
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+    t.text     "champs_pro_played",           default: "--- []\n"
+  end
+
+  create_table "matches_players", id: false, force: :cascade do |t|
+    t.integer "player_id", null: false
+    t.integer "match_id",  null: false
+    t.index ["player_id", "match_id"], name: "index_matches_players_on_player_id_and_match_id"
   end
 
   create_table "players", force: :cascade do |t|

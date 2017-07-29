@@ -34,15 +34,8 @@ class PlayersController < ApplicationController
   def show
     @player = Player.friendly.find( params[:id].downcase ) #friendly find uses name as slug for url
     match_list = []
-    @player.summonername.each do |sumname, accountId|
-      if accountId == 111
-        puts "Error #{accountId} - players_controller def show"
-      else
-        account_matches = Match.select{|game| game.pros_in_game.include?(accountId.to_s)}
-        match_list = account_matches + match_list
+        match_list = @player.matches
         match_list = match_list.uniq #removes any duplicate entries in short list array
-      end
-    end
     @sorted_matches = match_list.sort_by {|match| match["game_id"].to_i }.reverse!
   end
 

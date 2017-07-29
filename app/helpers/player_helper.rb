@@ -41,6 +41,7 @@ module PlayerHelper
         unless matchList["matches"].nil?
           matchList["matches"].each do |game|
             gameId = game["gameId"].to_s
+            champPlayed = game["champion"]
             found_match = Match.find_by_game_id(gameId) #See if match was already put in database
             if found_match.nil? #If not, add match info to Match model
               source = "https://#{region}.api.riotgames.com/lol/match/v3/matches/#{gameId}?api_key=#{ENV['riot_key']}"
@@ -48,13 +49,19 @@ module PlayerHelper
               if game_info["status"].nil?
                 new_match = Match.new(match_info: game_info, game_id: gameId)
                 new_match.pros_in_game << "#{accountId}" #Adds current pro in the pool of pros participated in match
+                new_match.champs_pro_played << champPlayed
                 new_match.save
+                @player.matches << new_match
+                
               end
             else
               # If match was already in database (likely regenerated from other pro), 
               # add current pro in the pool of pros participated in match
               unless found_match.pros_in_game.include?("#{accountId}")
                 found_match.pros_in_game << "#{accountId}"
+                found_match.champs_pro_played << champPlayed
+                found_match.update
+                @player.matches << found_match
               end
             end
           end
@@ -68,4 +75,19 @@ module PlayerHelper
       
     end
   end
+  
+  def find_player_participation_id(current_game, current_account_id)
+    if current_game.pros_in_game.include? current_account_id.to_s  
+      current_game["match_info"]["participantIdentities"].each do |participant| #Cycle through participants to find matching ID
+        if participant["player"]["accountId"] == current_account_id
+          participantId = participant["participantId"]  #If match, save for future reference
+          return participantId #Break method and return value as soon as ID is found
+        else  
+          next 
+        end 
+      end 
+    end 
+  end
+  
+  
 end
