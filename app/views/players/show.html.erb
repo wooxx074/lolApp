@@ -1,15 +1,20 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-        <%= save_player_matches %>
+        <% Thread.new do save_player_matches end %> <!-- Regenerate player matches in background thread -->
+         <% @player.matches.each do |match| %> <!-- testing for duplicate matches, delete in production -->
+           <%= match["game_id"] %>
+         <% end %>
         <% unless @sorted_matches.nil? %>
           <% @sorted_matches.each do |match| %>
           <%= render '/matches/match_show_form', game: match %>
-
             <br/>
+            <% break %> <!-- break to focus on one, delete in production? -->
+            <!-- TO DO: Limit to 10 matches on initial load? -->
           <% end %>
           <% else %>
-          <p>No current matches found</p>
+          <!-- sorted matches are nil if there are no games in the past 2 weeks -->
+          <p>No current matches found</p> 
         <% end %>
 
       <ul><%= "Blue Team:" %></ul>

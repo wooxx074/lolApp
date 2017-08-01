@@ -29,13 +29,21 @@ module PlayerHelper
   def save_player_matches
     # If it has been 30 minutes since the last regeneration, proceed
     if @player.last_regenerated_matches.nil? or @player.last_regenerated_matches < (DateTime.now - 0.5.hours)
+      #determine DateTime endpoint as last_regenerated_matches (minus 1 hour as cushion). 
+      #Endpoint will be 2 weeks back if last_regenerated_matches is nil or past 2 weeks
+      dateTime_endpoint = DateTime
+      if @player.last_regenerated_matches.nil? || @player.last_regenerated_matches.to_f*1000 < (DateTime.now.to_f*1000).to_i-1209600000
+        dateTime_endpoint = (DateTime.now.to_f*1000).to_i-1209600000
+      else
+        dateTime_endpoint = (@player.last_regenerated_matches.to_f*1000).to_i-3600000
+      end
       # Find League by player's team ID
       league = League.find(@player.team.league_id)
       region = region_check(league.name) #Convert region to fit Riot API url
       # Will pull match history for each summonername listed in Player
       @player.summonername.each do |sumname, accountId|
         # Pulls Riot API matchlist, beginning from two weeks back. Ordered by most recent first.
-        source = "https://#{region}.api.riotgames.com/lol/match/v3/matchlists/by-account/#{accountId}?beginTime=#{(DateTime.now.strftime('%Q').to_i-1209600000).to_s}&api_key=#{ENV['riot_key']}"
+        source = "https://#{region}.api.riotgames.com/lol/match/v3/matchlists/by-account/#{accountId}?beginTime=#{dateTime_endpoint}&api_key=#{ENV['riot_key']}"
         matchList = json_parse(source)
         # If no matchList created (API error typically), will not proceed
         unless matchList["matches"].nil?
@@ -60,7 +68,6 @@ module PlayerHelper
               unless found_match.pros_in_game.include?("#{accountId}")
                 found_match.pros_in_game << "#{accountId}"
                 found_match.champs_pro_played << champPlayed
-                found_match.update
                 @player.matches << found_match
               end
             end
