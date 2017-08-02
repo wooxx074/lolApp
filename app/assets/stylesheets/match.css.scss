@@ -1,0 +1,17 @@
+.static-splash {
+  padding-right: 0px !important; //!important to override bootstrap properties. Pull left portrait/splash art closer to matchlist
+}
+
+.match-border {
+  border: 2px solid black;
+  padding: 15px;
+}
+
+.match-main-panel {
+  width: 100%;
+  border: 2px solid black;
+}
+
+.match-top-right-row {
+  text-align: right;
+}

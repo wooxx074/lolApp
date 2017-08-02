@@ -1,68 +1,109 @@
-  <div>
-    <!--Begin finding participant identities-->
-    <% participantId = 0 %>
-    <% @player.summonername.each do |smname, accountId| %>
-      <!--Find out which accountId is linked to this game using method found in player_helper-->
-      <% participantId = find_player_participation_id(game, accountId) %> 
-    <% end %>
-    <!--End finding participant identities-->
-    <% patch = game["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
-    <%= "Patch #{patch}" %>
-    <!-- Regex filtering above-->
-    <!-- [^.]* = as many non-period characters as possible-->
-    <!-- . = a period-->
-    <!-- [^.]* = as many non-period characters as possible-->
-    <br/>
-    <% team_100_win = false %>
-    <% if game["match_info"]["teams"][0]["win"] == "Win" %> <!-- Identify whether blue team has won -->
-      <% team_100_win = true %>
-    <% end %>
-    <!-- Victory conditions: if player is participant 1-5(blue side) and team_100 win OR -->
-    <!-- if player is participant 6-10(red side) and team_100 lose -->
-    <!-- All other conditions are considered defeat -->
-    <!-- TODO: need to add elsif to account for remakes, not sure how API identifies remakes yet -->
-    <% if participantId < 6 && team_100_win || participantId > 6 && !team_100_win %>
-        <%= "Victory" %>
-      <% else %>
-        <%= "Defeat" %>
-    <% end %>
-    <br/>
-    <!-- pulling participantId's specific stats by pulling the corresponding array object -->
-    <!-- participantId starts at 1, but array starts at 0, hence the minus 1 -->
-    <% participant = game["match_info"]["participants"][participantId - 1] %> 
-    <% stats = participant["stats"] %>
-    <!-- call helper method to find the championId in Riot static API, using the championId saved in stats -->
-    <% champId = retrieve_champion(participant["championId"]) %>
-    <!-- call helper method to render an image_tag -->
-    <%= riot_static_img("champion", champId, "60x60") %> 
-    <br/>
-    <!-- Identify summoner spells chosen. Stats show spells via an integer ID. Retrieve_static_summs identifies spell key -->
-    <% summSpell1Key = retrieve_static_summs(participant["spell1Id"]) %>
-    <% summSpell2Key = retrieve_static_summs(participant["spell2Id"]) %>
-    <!-- Use summoner keys to render image tag -->
-    <%= riot_static_img("spell", summSpell1Key, "30x30") %>
-    <%= riot_static_img("spell", summSpell2Key, "30x30") %>
-    <br/>
-    <!-- Render image for each item. 7 items total including trinket. -->
-    <!-- Riot ddragon utilizes item number for database, hence no need to find key -->
-    <% (0..6).to_a.each do |i| %>
-      <%= riot_static_img("item", stats["item#{i}"], "30x30") %>
-    <% end %>
-    <br/>
+  <!--Begin finding participant identities-->
+  <% participantId = 0 %>
+  <% @player.summonername.each do |smname, accountId| %>
+    <!--Find out which accountId is linked to this game using method found in player_helper-->
+    <% participantId = find_player_participation_id(game, accountId) %> 
+  <% end %>
+  <!--End finding participant identities-->
+  <!-- pulling participantId's specific stats by pulling the corresponding array object -->
+  <!-- participantId starts at 1, but array starts at 0, hence the minus 1 -->
+  <% participant = game["match_info"]["participants"][participantId - 1] %> 
+  <% stats = participant["stats"] %>
+  <!-- call helper method to find the championId in Riot static API, using the championId saved in stats -->
+  <% champUsed = retrieve_champion(participant["championId"]) %>
 
-    <%= "KDA #{stats["kills"]}/#{stats["deaths"]}/#{stats["assists"]}" %>
-    <br/>
-    BANS <br/>
-    <!-- Find champion key through id, and render image_tag accordingly for each ban-->
-    <!-- Bans for blue side first, then bans for red side next -->
-    <% game["match_info"]["teams"][0]["bans"].each do |ban| %>
-      <% champBanId = retrieve_champion(ban["championId"]) %>
-      <%= riot_static_img("champion", champBanId, "30x30") %>
-    <% end %>
-    <br/>
-    <% game["match_info"]["teams"][1]["bans"].each do |ban| %>
-      <% champBanId = retrieve_champion(ban["championId"]) %>
-      <%= riot_static_img("champion", champBanId, "30x30") %>
-    <% end %>
-    
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 col-md-offset-1 text-right static-splash"> <!-- first column to show static splash on left -->
+        <% champSplash = "http://ddragon.leagueoflegends.com/cdn/img/champion/loading/#{champUsed["id"]}_0.jpg(s)" %>
+        <%= image_tag(champSplash, size:"275x500") %>
+      </div>
+      <div class="col-md-8"> <!-- Column for scrolling match history -->
+      <% unless @sorted_matches.nil? %>
+        <% matches_generated = 0 %>
+        <% @sorted_matches.each do |match| %>
+        <div class="row">
+          <div class="col-md-10 match-main-panel pre-scrollable">
+            <div row> <!-- Top row, showing win/loss, date, patch number -->
+              <div class="col-md-8">
+                <%= champUsed["name"] %> - 
+                <% team_100_win = false %>
+                <% if game["match_info"]["teams"][0]["win"] == "Win" %> <!-- Identify whether blue team has won -->
+                  <% team_100_win = true %>
+                <% end %>
+                <!-- Victory conditions: if player is participant 1-5(blue side) and team_100 win OR -->
+                <!-- if player is participant 6-10(red side) and team_100 lose -->
+                <!-- All other conditions are considered defeat -->
+                <!-- TODO: need to add elsif to account for remakes, not sure how API identifies remakes yet -->
+                <% if participantId < 6 && team_100_win || participantId > 6 && !team_100_win %>
+                    <%= "Victory" %>
+                  <% else %>
+                    <%= "Defeat" %>
+                <% end %>
+              </div>
+              <div class="col-md-4 match-top-right-row">
+                <% gameCreated = Time.at(game["match_info"]["gameCreation"]/1000) %>
+                <%= gameCreated.strftime("%B %e, %Y") %> - 
+                <% patch = game["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
+                <%= "Patch #{patch}" %>
+                <!-- Regex filtering above-->
+                <!-- [^.]* = as many non-period characters as possible-->
+                <!-- . = a period-->
+                <!-- [^.]* = as many non-period characters as possible-->
+              </div>
+            </div>
+            <br/>
+            <div class="row">
+              <div class="col-md-4">
+                <!-- call helper method to render an image_tag, using player's participantId found in line 11 -->
+                  <%= riot_static_img("champion", champUsed["id"], "60x60") %> 
+                <div>
+                  <!-- Identify summoner spells chosen. Stats show spells via an integer ID. Retrieve_static_summs identifies spell key -->
+                  <% summSpell1Key = retrieve_static_summs(participant["spell1Id"]) %>
+                  <% summSpell2Key = retrieve_static_summs(participant["spell2Id"]) %>
+                  <!-- Use summoner keys to render image tag -->
+                  <%= riot_static_img("spell", summSpell1Key, "20x20") %>
+                  <%= riot_static_img("spell", summSpell2Key, "20x20") %>
+                  <!-- search for keystone mastery using the first 3 numbers of mastery ID. Must be 616X, 626X, or 636X -->
+                  <% participant["masteries"].each do |mastery| %>
+                    <% current_mastery = mastery["masteryId"] %>
+                    <% if [616, 626, 636].include? current_mastery/10 %>
+                      <%= riot_static_img("mastery", current_mastery, "20x20") %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="row">
+                  <div class="col">
+                    <%= "KDA #{stats["kills"]}/#{stats["deaths"]}/#{stats["assists"]}" %>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <!-- Render image for each item. 7 items total including trinket. -->
+                    <!-- Riot ddragon utilizes item number for database, hence no need to find key -->
+                    <% (0..6).to_a.each do |i| %>
+                      <%= riot_static_img("item", stats["item#{i}"], "30x30") %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--BANS <br/>-->
+            <!-- Find champion key through id, and render image_tag accordingly for each ban-->
+            <!-- Bans for blue side first, then bans for red side next -->
+            <%# game["match_info"]["teams"][0]["bans"].each do |ban| %>
+              <%# champBanId = retrieve_champion(ban["championId"]) %>
+              <%#= riot_static_img("champion", champBanId["id"], "30x30") %>
+            <%# end %>
+            <!--<br/>-->
+            <%# game["match_info"]["teams"][1]["bans"].each do |ban| %>
+              <%# champBanId = retrieve_champion(ban["championId"]) %>
+              <%#= riot_static_img("champion", champBanId["id"], "30x30") %>
+            <%# end %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
