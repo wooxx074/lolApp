@@ -41,5 +41,29 @@ module MatchHelper
     return image_tag("http://ddragon.leagueoflegends.com/cdn/#{current_game_version}/img/#{category}/#{value}.png", size: imgsize)
   end
   
+  def find_participant_role(participant) #Role/lane found through participant["timeline"]["lane" or "role"]
+    unless participant["lane"] == "BOTTOM"
+      return participant["lane"]
+    else
+      if participant["role"] == "DUO_SUPPORT"
+        return "SUPPORT"
+      else
+        return "ADC"
+      end
+    end
+  end
+  
+  def find_lane_opponent(game, participantId, participant_role)
+    participant_range = (1..10)
+    if participantId > 6
+      participant_range = (1..5)
+    else
+      participant_range = (6..10)
+    end
+    participant_range.each do |n|
+      opponent = game["match_info"]["participants"][n]["timeline"]
+      find_participant_role(opponent)
+    end #TO DO SEE IF OPPONENT ROLE MATCHES PARTICIPANT ROLE
+  end
 
 end

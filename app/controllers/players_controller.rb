@@ -39,7 +39,7 @@ class PlayersController < ApplicationController
   end
 
   def edit
-    @player = Player.friendly.find( params[:id].downcase )
+    @player = Player.friendly.find( params[:id].downcase)
   end
 
   def update
@@ -58,6 +58,7 @@ class PlayersController < ApplicationController
       else 
         #If error, try to find previous corresponding account ID and add to this hash
         summonerHash[smname] = @player.summonername[smname] 
+        puts "Error 111, using previous account ID"
       end
     end
     #re-insert new summonerHash into cloned params, then proceed with mass assign edited fields
@@ -67,7 +68,7 @@ class PlayersController < ApplicationController
     if @player.update_attributes(updatedParams)
       #Signal update was successful or else return to edit page
       flash[:success] = "#{@player.name} updated!" 
-      redirect_to edit_player_path(id: params[:name].downcase)
+      redirect_to edit_player_path(id: params[:id])
     else
       render action :edit
     end

@@ -1,8 +1,10 @@
+  <%# Thread.new do save_player_matches end %>
   <!--Begin finding participant identities-->
   <% participantId = 0 %>
   <% @player.summonername.each do |smname, accountId| %>
     <!--Find out which accountId is linked to this game using method found in player_helper-->
     <% participantId = find_player_participation_id(game, accountId) %> 
+    <% puts participantId %>
   <% end %>
   <!--End finding participant identities-->
   <!-- pulling participantId's specific stats by pulling the corresponding array object -->
@@ -11,21 +13,10 @@
   <% stats = participant["stats"] %>
   <!-- call helper method to find the championId in Riot static API, using the championId saved in stats -->
   <% champUsed = retrieve_champion(participant["championId"]) %>
-
-  <div class="container">
-    <div class="row">
-      <div class="col-md-3 col-md-offset-1 text-right static-splash"> <!-- first column to show static splash on left -->
-        <% champSplash = "http://ddragon.leagueoflegends.com/cdn/img/champion/loading/#{champUsed["id"]}_0.jpg(s)" %>
-        <%= image_tag(champSplash, size:"275x500") %>
-      </div>
-      <div class="col-md-8"> <!-- Column for scrolling match history -->
-      <% unless @sorted_matches.nil? %>
-        <% matches_generated = 0 %>
-        <% @sorted_matches.each do |match| %>
         <div class="row">
-          <div class="col-md-10 match-main-panel pre-scrollable">
+          <div class="col-md-12 match-main-panel">
             <div row> <!-- Top row, showing win/loss, date, patch number -->
-              <div class="col-md-8">
+              <div class="col-md-8 top-match-panel">
                 <%= champUsed["name"] %> - 
                 <% team_100_win = false %>
                 <% if game["match_info"]["teams"][0]["win"] == "Win" %> <!-- Identify whether blue team has won -->
@@ -41,7 +32,7 @@
                     <%= "Defeat" %>
                 <% end %>
               </div>
-              <div class="col-md-4 match-top-right-row">
+              <div class="col-md-4 top-match-panel match-top-right-row">
                 <% gameCreated = Time.at(game["match_info"]["gameCreation"]/1000) %>
                 <%= gameCreated.strftime("%B %e, %Y") %> - 
                 <% patch = game["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
@@ -54,16 +45,20 @@
             </div>
             <br/>
             <div class="row">
-              <div class="col-md-4">
-                <!-- call helper method to render an image_tag, using player's participantId found in line 11 -->
+              <div class="col-md-2 champ-portrait">
+                <span>
+                  <!-- call helper method to render an image_tag, using player's participantId found in line 11 -->
                   <%= riot_static_img("champion", champUsed["id"], "60x60") %> 
-                <div>
+                </span>
+                </div>
+                <div class="col-md-1 summoner-spells-keystone">
+                <span>
                   <!-- Identify summoner spells chosen. Stats show spells via an integer ID. Retrieve_static_summs identifies spell key -->
                   <% summSpell1Key = retrieve_static_summs(participant["spell1Id"]) %>
                   <% summSpell2Key = retrieve_static_summs(participant["spell2Id"]) %>
                   <!-- Use summoner keys to render image tag -->
-                  <%= riot_static_img("spell", summSpell1Key, "20x20") %>
-                  <%= riot_static_img("spell", summSpell2Key, "20x20") %>
+                  <%= riot_static_img("spell", summSpell1Key, "20x20") %><br/>
+                  <%= riot_static_img("spell", summSpell2Key, "20x20") %><br/>
                   <!-- search for keystone mastery using the first 3 numbers of mastery ID. Must be 616X, 626X, or 636X -->
                   <% participant["masteries"].each do |mastery| %>
                     <% current_mastery = mastery["masteryId"] %>
@@ -71,9 +66,9 @@
                       <%= riot_static_img("mastery", current_mastery, "20x20") %>
                     <% end %>
                   <% end %>
-                </div>
+                </span>
               </div>
-              <div class="col-md-8">
+              <div class="col-md-6">
                 <div class="row">
                   <div class="col">
                     <%= "KDA #{stats["kills"]}/#{stats["deaths"]}/#{stats["assists"]}" %>
@@ -84,10 +79,16 @@
                     <!-- Render image for each item. 7 items total including trinket. -->
                     <!-- Riot ddragon utilizes item number for database, hence no need to find key -->
                     <% (0..6).to_a.each do |i| %>
-                      <%= riot_static_img("item", stats["item#{i}"], "30x30") %>
+                      <%= riot_static_img("item", stats["item#{i}"], "40x40") %>
                     <% end %>
                   </div>
                 </div>
+              </div>
+              <div class="col-md-3">
+                <% participant_role = find_participant_role(participant["timeline"]) %>
+                <!--CS Diff/Min<br/>-->
+                <%#= "0-10 Min:  #{participant["timeline"]["creepsPerMinDeltas"]["0-10"]}" %>
+                <%#= "10-20 Min: #{participant["timeline"]["creepsPerMinDeltas"]["10-20"]}" %>
               </div>
             </div>
             <!--BANS <br/>-->
@@ -104,6 +105,4 @@
             <%# end %>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+     
