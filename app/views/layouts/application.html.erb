@@ -9,31 +9,33 @@
   </head>
 
   <body>
-    <!-- Navbar begin -->
-    <nav class="navbar navbar-default navbar-static-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
+    <div class="jumbotron text-center">
+
+      <nav class="navbar navbar-default" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <%= link_to root_path, class: "navbar-brand" do %>
+              <h2 class="display-1">Proloqueue</h1>
+            <% end %>
+          </div>
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-nav-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <%= link_to root_path, class: "navbar-brand" do %>
-            <i class="fa fa-group"></i> Proloqueue
-          <% end %>
+          <div class="collapse navbar-collapse" id="main-nav-collapse">
+            <ul class="nav navbar-nav navbar-center">
+              <li class="match_category"><%= link_to "Teams", '#' %></li>
+              <li class="match_category"><%= link_to "Leagues", '#' %></li>
+              <li class="match_category"><%= link_to "Champions", '#' %></li>
+            </ul>
+          </div><!-- /.navbar-collapse -->
         </div>
+      </nav>
+    </div>
+    <!-- Navbar begin -->
 
-        <div class="collapse navbar-collapse" id="main-nav-collapse">
-
-          <ul class="nav navbar-nav navbar-right">
-            <li><%= link_to "Teams", '#' %></li>
-            <li><%= link_to "Leagues", '#' %></li>
-            <li><%= link_to "Champions", '#' %></li>
-          </ul>
-        </div><!-- /.navbar-collapse -->
-      </div>
-    </nav>
 
     <div class="container flash-container">
       <% flash.each do |type, msg| %>

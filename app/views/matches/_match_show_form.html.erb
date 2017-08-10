@@ -45,13 +45,21 @@
             </div>
             <br/>
             <div class="row">
+              <div class="col-md-1">
+                <% participant_role = find_participant_role(participant["timeline"]) %>
+                <%= image_tag("/roleSymbols/#{participant_role}.png", size: '40x40') %>
+
+                <!--CS Diff/Min<br/>-->
+                <%#= "0-10 Min:  #{participant["timeline"]["creepsPerMinDeltas"]["0-10"]}" %>
+                <%#= "10-20 Min: #{participant["timeline"]["creepsPerMinDeltas"]["10-20"]}" %>
+              </div>
               <div class="col-md-2 champ-portrait">
                 <span>
                   <!-- call helper method to render an image_tag, using player's participantId found in line 11 -->
                   <%= riot_static_img("champion", champUsed["id"], "60x60") %>
                 </span>
-                </div>
-                <div class="col-md-1 summoner-spells-keystone">
+              </div>
+              <div class="col-md-1 summoner-spells-keystone">
                 <span>
                   <!-- Identify summoner spells chosen. Stats show spells via an integer ID. Retrieve_static_summs identifies spell key -->
                   <% summSpell1Key = retrieve_static_summs(participant["spell1Id"]) %>
@@ -88,7 +96,7 @@
                   </div>
                 </div>
               </div>
-              <div class="items col-md-4">
+              <div class="items col-md-6">
                 <div class="row">
                   <div class="col">
                     <!-- Render image for each item. 7 items total including trinket. -->
@@ -101,12 +109,6 @@
                     <% end %>
                   </div>
                 </div>
-              </div>
-              <div class="col-md-3">
-                <% participant_role = find_participant_role(participant["timeline"]) %>
-                <!--CS Diff/Min<br/>-->
-                <%#= "0-10 Min:  #{participant["timeline"]["creepsPerMinDeltas"]["0-10"]}" %>
-                <%#= "10-20 Min: #{participant["timeline"]["creepsPerMinDeltas"]["10-20"]}" %>
               </div>
             </div>
             <!--BANS <br/>-->
