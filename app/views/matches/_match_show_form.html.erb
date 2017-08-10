@@ -3,13 +3,13 @@
   <% participantId = 0 %>
   <% @player.summonername.each do |smname, accountId| %>
     <!--Find out which accountId is linked to this game using method found in player_helper-->
-    <% participantId = find_player_participation_id(game, accountId) %> 
+    <% participantId = find_player_participation_id(game, accountId) %>
     <% puts participantId %>
   <% end %>
   <!--End finding participant identities-->
   <!-- pulling participantId's specific stats by pulling the corresponding array object -->
   <!-- participantId starts at 1, but array starts at 0, hence the minus 1 -->
-  <% participant = game["match_info"]["participants"][participantId - 1] %> 
+  <% participant = game["match_info"]["participants"][participantId - 1] %>
   <% stats = participant["stats"] %>
   <!-- call helper method to find the championId in Riot static API, using the championId saved in stats -->
   <% champUsed = retrieve_champion(participant["championId"]) %>
@@ -17,7 +17,7 @@
           <div class="col-md-12 match-main-panel">
             <div row> <!-- Top row, showing win/loss, date, patch number -->
               <div class="col-md-8 top-match-panel">
-                <%= champUsed["name"] %> - 
+                <%= champUsed["name"] %> -
                 <% team_100_win = false %>
                 <% if game["match_info"]["teams"][0]["win"] == "Win" %> <!-- Identify whether blue team has won -->
                   <% team_100_win = true %>
@@ -34,7 +34,7 @@
               </div>
               <div class="col-md-4 top-match-panel match-top-right-row">
                 <% gameCreated = Time.at(game["match_info"]["gameCreation"]/1000) %>
-                <%= gameCreated.strftime("%B %e, %Y") %> - 
+                <%= gameCreated.strftime("%B %e, %Y") %> -
                 <% patch = game["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
                 <%= "Patch #{patch}" %>
                 <!-- Regex filtering above-->
@@ -48,7 +48,7 @@
               <div class="col-md-2 champ-portrait">
                 <span>
                   <!-- call helper method to render an image_tag, using player's participantId found in line 11 -->
-                  <%= riot_static_img("champion", champUsed["id"], "60x60") %> 
+                  <%= riot_static_img("champion", champUsed["id"], "60x60") %>
                 </span>
                 </div>
                 <div class="col-md-1 summoner-spells-keystone">
@@ -68,18 +68,36 @@
                   <% end %>
                 </span>
               </div>
-              <div class="col-md-6">
+              <div class="stats col-md-2">
                 <div class="row">
                   <div class="col">
-                    <%= "KDA #{stats["kills"]}/#{stats["deaths"]}/#{stats["assists"]}" %>
+                    <%= "#{stats["kills"]}/#{stats["deaths"]}/#{stats["assists"]}" %>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col">
+                    <% creepscore = stats["totalMinionsKilled"] + stats["neutralMinionsKilled"] %>
+                    <% gameDuration = game["match_info"]["gameDuration"]/60 %>
+                    <% csm = (creepscore/gameDuration).round(2) %>
+                    <%= "#{csm} CS/Min" %>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <%= "Level #{stats["champLevel"]}"%>
+                  </div>
+                </div>
+              </div>
+              <div class="items col-md-4">
+                <div class="row">
+                  <div class="col">
                     <!-- Render image for each item. 7 items total including trinket. -->
                     <!-- Riot ddragon utilizes item number for database, hence no need to find key -->
-                    <% (0..6).to_a.each do |i| %>
-                      <%= riot_static_img("item", stats["item#{i}"], "40x40") %>
+                    <% ([0, 1, 2, 6, 3, 4, 5]).each do |i| %>
+                      <% if i == 3 %>
+                        <br/>
+                      <% end %>
+                      <%= riot_static_img("item", stats["item#{i}"], "30x30") %>
                     <% end %>
                   </div>
                 </div>
@@ -105,4 +123,3 @@
             <%# end %>
           </div>
         </div>
-     

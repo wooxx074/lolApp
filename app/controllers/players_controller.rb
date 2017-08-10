@@ -29,7 +29,7 @@ class PlayersController < ApplicationController
 
   def show
     #friendly find uses name as slug for url. .downcase because slugs are all lowercase
-    @player = Player.friendly.find( params[:id].downcase ) 
+    @player = Player.friendly.find( params[:id].downcase )
     match_list = @player.matches #find all matches of player through association
     match_list = match_list.uniq #removes any duplicate entries in short list array
     #sort matches by game id because Riot's game ID are chronological
@@ -55,19 +55,19 @@ class PlayersController < ApplicationController
       accountId = retrieve_sumn_id(region_check(league.name), smname)
       unless accountId == 111 #111 is error code for no summoner ID found (API rate limit usually)
         summonerHash[smname] = accountId
-      else 
+      else
         #If error, try to find previous corresponding account ID and add to this hash
-        summonerHash[smname] = @player.summonername[smname] 
+        summonerHash[smname] = @player.summonername[smname]
         puts "Error 111, using previous account ID"
       end
     end
     #re-insert new summonerHash into cloned params, then proceed with mass assign edited fields
-    updatedParams[:summonername] = summonerHash 
-    
+    updatedParams[:summonername] = summonerHash
+
     # Mass assign edited profile attributes and update
     if @player.update_attributes(updatedParams)
       #Signal update was successful or else return to edit page
-      flash[:success] = "#{@player.name} updated!" 
+      flash[:success] = "#{@player.name} updated!"
       redirect_to edit_player_path(id: params[:id])
     else
       render action :edit

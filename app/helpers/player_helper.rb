@@ -6,14 +6,14 @@ module PlayerHelper
     result = JSON.parse(data)
     return result
   end
-  
+
   def region_check(region)
     if region == "LCK" then return "kr"
       elsif region == "NA LCS" then return "na1"
       elsif region == "EU LCS" then return "euw1"
     else return "none"
     end
-  end 
+  end
 
   def retrieve_sumn_id(region, sumname)
     source = "https://#{region}.api.riotgames.com/lol/summoner/v3/summoners/by-name/#{sumname}?api_key=#{ENV['riot_key']}"
@@ -23,17 +23,20 @@ module PlayerHelper
       result = 111 #temp error code
       puts "Summoner ID Not found"
     end
-    
+
     return result
   end
-  
+
   def save_player_matches
     # If it has been 30 minutes since the last regeneration, proceed
+
     if @player.last_regenerated_matches.nil? || @player.last_regenerated_matches < (DateTime.now - 0.5.hours)
-      #determine DateTime endpoint as last_regenerated_matches (minus 2 hours as cushion). 
+      #determine DateTime endpoint as last_regenerated_matches (minus 2 hours as cushion).
       #Endpoint will be 2 weeks back if last_regenerated_matches is nil or past 2 weeks
-      dateTime_endpoint = (DateTime.now.to_f*1000).to_i-1209600000
-      if @player.last_regenerated_matches > (DateTime.now - 2.weeks)
+      dateTime_endpoint = 0
+      if @player.last_regenerated_matches.nil? || @player.last_regenerated_matches < (DateTime.now - 2.weeks)
+        dateTime_endpoint = (DateTime.now.to_f*1000).to_i-1209600000
+      else
         dateTime_endpoint = (@player.last_regenerated_matches.to_f*1000).to_i-7200000
       end
       # Find League by player's team ID
@@ -61,7 +64,7 @@ module PlayerHelper
                 @player.matches << new_match
               end
             else
-              # If match was already in database (likely regenerated from other pro), 
+              # If match was already in database (likely regenerated from other pro),
               # add current pro in the pool of pros participated in match
               unless found_match.pros_in_game.include?("#{accountId}")
                 found_match.pros_in_game << "#{accountId}"
@@ -78,22 +81,22 @@ module PlayerHelper
           return "" #Return nothing if no match list has been generated
         end
       end
-      
+
     end
   end
-  
+
   def find_player_participation_id(current_game, current_account_id)
-    if current_game.pros_in_game.include? current_account_id.to_s 
+    if current_game.pros_in_game.include? current_account_id.to_s
       current_game["match_info"]["participantIdentities"].each do |participant| #Cycle through participants to find matching ID
         if participant["player"]["currentAccountId"] == current_account_id
           participantId = participant["participantId"]  #If match, save for future reference
           return participantId #Break method and return value as soon as ID is found
-        else  
-          next 
-        end 
+        else
+          next
+        end
       end
-    end 
+    end
   end
-  
-  
+
+
 end
