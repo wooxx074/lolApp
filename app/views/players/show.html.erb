@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-7 col-md-offset-1 main-match-list"> <!-- Column for scrolling match history -->
-        <%= link_to "more", "/matches/additional_match_info", id: "addt_info", remote: true %>
+        <%= link_to "more", "/matches/additional_match_info", id: "more_info", remote: true %>
         <% unless @sorted_matches.nil? %>
           <% matches_generated = 0 %>
           <% @sorted_matches.each do |match| %>
@@ -20,13 +20,13 @@
       </div>
       <div class="col-md-3 static-splash"> <!-- first column to show static splash on left -->
         <div id="loading_splash">
-          </div><% champUsed = Hash.new %> <!-- filler champUsed. Will actually need a player portrait -->
+          <% champUsed = Hash.new %> <!-- filler champUsed. Will actually need a player portrait -->
           <% champUsed[:Maokai] = 1 %>
           <% champSplash = "http://ddragon.leagueoflegends.com/cdn/img/champion/loading/#{champUsed["id"]}_0.jpg(s)" %>
           <%= image_tag(champSplash, size:"275x500") %>
         </div>
-        <div id="add_match_info">
-          <% render '/matches/additional_match_info' %>
+        <div id="addt_info">
+          
         </div>
       </div>
     </div>
