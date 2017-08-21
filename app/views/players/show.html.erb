@@ -2,7 +2,6 @@
   <div class="container">
     <div class="row">
       <div class="col-md-7 col-md-offset-1 main-match-list"> <!-- Column for scrolling match history -->
-        <%= link_to "more", "/matches/additional_match_info", id: "more_info", remote: true %>
         <% unless @sorted_matches.nil? %>
           <% matches_generated = 0 %>
           <% @sorted_matches.each do |match| %>
@@ -26,7 +25,7 @@
           <%= image_tag(champSplash, size:"275x500") %>
         </div>
         <div id="addt_info">
-          
+
         </div>
       </div>
     </div>

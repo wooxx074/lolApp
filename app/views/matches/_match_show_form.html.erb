@@ -96,7 +96,7 @@
             </div>
           </div>
         </div>
-        <div class="items col-md-6">
+        <div class="items col-md-5">
           <div class="row">
             <div class="col">
               <!-- Render image for each item. 7 items total including trinket. -->
@@ -110,7 +110,11 @@
             </div>
           </div>
         </div>
+        <div class="more_stats">
+                  <%= link_to "+", current_match_path( match_id: game["game_id"], participant_id: participant["participantId"] ), class:"more_info", remote: true  %>
+        </div>
       </div>
+
       <!--BANS <br/>-->
       <!-- Find champion key through id, and render image_tag accordingly for each ban-->
       <!-- Bans for blue side first, then bans for red side next -->

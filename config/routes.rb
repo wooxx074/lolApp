@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   resources :teams
   resources :players
   resources :matches
+  get '/matches/additional_match_info' => 'matches#additional_match_info', as: "current_match"
 end
