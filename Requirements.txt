@@ -11,4 +11,4 @@ Accounts have many games > Or players have many games, have accounts in an array
 Games must show build, who they're playing against (if a pro, show pro as well as champ)
 Initial tab shows quick summary. Clicking on it will bring full game stats
 Certain win rates on specific champs for pros?
-Patch indicator on when game was played?
+Patch indicator on when game was played? 

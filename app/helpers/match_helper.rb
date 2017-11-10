@@ -1,12 +1,4 @@
 module MatchHelper
-  def json_parse(source)
-    encoded_url = URI.encode(source)
-    resp = Net::HTTP.get_response(URI.parse(encoded_url))
-    data = resp.body
-    result = JSON.parse(data)
-    return result
-  end
-  
   def current_game_version
     game_versions = json_parse("https://na1.api.riotgames.com/lol/static-data/v3/versions?api_key=#{ENV['riot_key']}")
     current_game_version = game_versions[0] #Find most current version of game for updated API

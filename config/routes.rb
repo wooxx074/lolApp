@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   root to: 'pages#home'
   resources :leagues
   resources :teams
-  resources :players
+  resources :players do
+    resources :matches
+  end
   resources :matches
+
 end

@@ -96,7 +96,7 @@
             </div>
           </div>
         </div>
-        <div class="items col-md-6">
+        <div class="items col-md-5">
           <div class="row">
             <div class="col">
               <!-- Render image for each item. 7 items total including trinket. -->
@@ -109,6 +109,10 @@
               <% end %>
             </div>
           </div>
+        </div>
+        <div class="col-md-1">
+
+          <%= link_to "+", player_match_path(player_id: @player.name, match_id: 422) %>
         </div>
       </div>
       <!--BANS <br/>-->
