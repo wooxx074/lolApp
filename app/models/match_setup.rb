@@ -1,4 +1,5 @@
-class MatchSetup
+class MatchSet
+  include MatchDetails
   
   def pull_matches(player, numOfMatches)
     #sort matches by game id because Riot's game ID are chronological
@@ -9,17 +10,7 @@ class MatchSetup
     parsedList = matchParse(sortedList)
     return parsedList
   end
-  
-  def matchParse(matchList)
-    parsedMatches = []
-    matchList.each do |match|
-      currentMatch = MatchView.new(
-        :gameId => match.gameId
-        )
-      parsedMatches << currentMatch
-    end
-    return parsedMatches
-  end
+
   
   private
   def sortedMatches(player)

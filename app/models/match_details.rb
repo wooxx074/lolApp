@@ -1,23 +1,31 @@
 module MatchDetails
-  def create_team(matchinfo)
+  def create_team(matchinfo, teamnumber)
+      teamnumber -= 1 #account for array starting at 0
       team = MatchTeam.new
-      team.generate(matchinfo)
+      team.generate(matchinfo["teams"][teamnumber])
       return team
   end
   
   def create_team_players(matchinfo, teamID)
-    teamPlayers = ["TOP","JUNGLE","MIDDLE","ADC","SUPPORT"]
-    
+    teamPlayers = { "TOP" => nil,
+                    "JUNGLE" => nil,
+                    "MIDDLE" => nil,
+                    "ADC" => nil,
+                    "SUPPORT" => nil }
     playerList = matchinfo["participants"].select{|t| t["teamId"] == teamID}
     playerList.each do |player|
       participantInfo = matchinfo["participantIdentities"].find{|p| p["participantId"] == player["participantId"]}
-      updatedInfo = matchinfo.merge(participantInfo)
+      participantInfo = participantInfo["player"]
+      updatedInfo = player.merge(participantInfo)
       currentPlayer = MatchParticipant.new
       currentPlayer.generate(updatedInfo)
-      teamPlayers.map! { |x| x == currentPlayer.role ? currentPlayer : x }
+      teamPlayers["#{currentPlayer.role}"] = currentPlayer
     end
     return teamPlayers
   end
+  
+  
+  
   MatchTeam = Struct.new(  
     :win, 
     :bans,
@@ -69,7 +77,7 @@ module MatchDetails
     :summonerSpell2,
     :masteries,
     :items,
-    :KDA,
+    :kda,
     :damageDealt,
     :amountHealed,
     :damageShielded,
@@ -79,6 +87,7 @@ module MatchDetails
     :controlWards,
     :wardsPlaced,
     :wardsKilled,
+    :creepscorePerMin,
     :creepscoreDiff,
     :expDiff,
     :role,
@@ -92,7 +101,7 @@ module MatchDetails
       self.summonerSpell2 = args["spell2Id"]
       self.masteries = args["masteries"]
       self.items = compile_items(args["stats"])
-      self.KDA = compile_KDA(args["stats"])
+      self.kda = compile_KDA(args["stats"])
       self.damageDealt = args["stats"]["totalDamageDealtToChampions"]
       self.amountHealed = args["stats"]["totalHeal"]
       self.damageShielded = args["stats"]["damageSelfMitigated"]
@@ -102,9 +111,10 @@ module MatchDetails
       self.controlWards = args["stats"]["visionWardsBoughtInGame"]
       self.wardsPlaced = args["stats"]["wardsPlaced"]
       self.wardsKilled = args["stats"]["wardsKilled"]
-      self.creepscoreDiff = compile_CSDiff(args["stats"])
-      self.expDiff = compile_EXPDiff(args["stats"])
-      self.role = find_role(args)
+      self.creepscorePerMin = compile_csmin(args["timeline"])
+      self.creepscoreDiff = compile_CSDiff(args["timeline"])
+      self.expDiff = compile_EXPDiff(args["timeline"])
+      self.role = find_role(args["timeline"])
       self.accountID = args["accountId"]
       self.summonerName = args["summonerName"]
     end
@@ -122,6 +132,58 @@ module MatchDetails
       end
       itemArray << stats["item6"]
       return itemArray
+    end
+    
+    def compile_KDA(stats)
+      kda = { "kills" => stats["kills"],
+              "deaths" => stats["deaths"],
+              "assists" => stats["assists"] }
+      return kda
+    end
+    
+    def compile_CS(stats)
+      minionKills = stats["totalMinionsKilled"]
+      neutralMonsterKills = stats["neutralMinionsKilled"]
+      totalCS = minionKills + neutralMonsterKills
+      return totalCS
+    end
+    
+    def compile_csmin(timeline)
+      csMin = {"0-10" => timeline["creepsPerMinDeltas"]["0-10"],
+                "10-20" => timeline["creepsPerMinDeltas"]["10-20"],
+                "20-30" => timeline["creepsPerMinDeltas"]["20-30"]}
+      return csMin
+    end
+    
+    def compile_CSDiff(timeline)
+      csDiff = {"0-10" => timeline["csDiffPerMinDeltas"]["0-10"],
+                "10-20" => timeline["csDiffPerMinDeltas"]["10-20"],
+                "20-30" => timeline["csDiffPerMinDeltas"]["20-30"]}
+      return csDiff
+    end
+    
+    def compile_EXPDiff(timeline)
+      expDiff = {"0-10" => timeline["xpDiffPerMinDeltas"]["0-10"],
+          "10-20" => timeline["xpDiffPerMinDeltas"]["10-20"],
+          "20-30" => timeline["xpDiffPerMinDeltas"]["20-30"]}
+      return expDiff
+    end
+    
+    def find_role(timeline)
+      case
+      when timeline["lane"] == "TOP"
+        return "TOP"
+      when timeline["lane"] == "JUNGLE"
+        return "JUNGLE"
+      when timeline["lane"] == "MIDDLE"
+        return "MID"
+      when timeline["role"] == "DUO_CARRY"
+        return "ADC"
+      when timeline["role"] == "DUO_SUPPORT"
+        return "SUPPORT"
+      else
+        return nil
+      end
     end
   end
 end

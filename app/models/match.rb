@@ -1,4 +1,5 @@
 class Match < ApplicationRecord
+  require 'match_details'
   include MatchDetails
   serialize :match_info, JSON
   serialize :pros_in_game, Array
@@ -6,7 +7,7 @@ class Match < ApplicationRecord
   validates_uniqueness_of :game_id
   has_and_belongs_to_many :players
   
-  # Dynamically initialize and set match_info JSON variables for simple access
+  # Dynamically initialize and set match_info JSON variables for simpler access
   after_initialize do
     args = match_detail_arguments(self.match_info)
     init_match_details(args)
@@ -22,13 +23,11 @@ class Match < ApplicationRecord
       region: match["platformId"], #e.g. NA1
       gameTime: match["gameDuration"], #gameTime currently in seconds, need to convert to minutes
       patchVersion: match["gameVersion"].first(4), #Only first four to match Riot patch versions
-      team1: MatchDetails::MatchTeam.new,
-      team2: MatchDetails::MatchTeam.new
+      team1: create_team(match, 1),
+      team1players: create_team_players(match, 100),
+      team2: create_team(match, 2),
+      team2players: create_team_players(match, 200)
     }
-    #Fill in struct values after object is created.
-    #This is done over openstruct so we can filter the match_info to only what is needed.
-    match_detail_args[:team1].generate(match["teams"][0])
-    match_detail_args[:team2].generate(match["teams"][1])
     return match_detail_args
   end
   
@@ -45,4 +44,6 @@ class Match < ApplicationRecord
       define_singleton_method(key) { instance_variable_get"@#{key}" } 
     end
   end
+  
+  
 end
