@@ -26,7 +26,19 @@ module PlayerHelper
 
     return result
   end
-
+  
+  # Identifiy which participant is the player
+  def player_stats(match, playerID)
+    allParticipants = []
+    [match.team1players, match.team2players].each do |team|
+      team.each do |role, data|
+        allParticipants << data
+      end
+    end
+    result = allParticipants.find {|p| p.accountID == playerID}
+    return result
+  end
+  
   def save_player_matches
     # # If it has been 30 minutes since the last regeneration, proceed
 

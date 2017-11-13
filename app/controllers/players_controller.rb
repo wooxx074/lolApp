@@ -32,8 +32,7 @@ class PlayersController < ApplicationController
     #friendly find uses name as slug for url. .downcase because slugs are all lowercase
     @player = Player.friendly.find( params[:id].downcase )
     matchList = MatchSetup.new
-    @sorted_matches = matchList.pull_matches(@player, 5)
-  
+    @matchList = matchList.pull_matches(@player, 5)
   end
 
   def edit

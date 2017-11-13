@@ -9,15 +9,15 @@ module MatchDetails
   def create_team_players(matchinfo, teamID)
     teamPlayers = { "TOP" => nil,
                     "JUNGLE" => nil,
-                    "MIDDLE" => nil,
+                    "MID" => nil,
                     "ADC" => nil,
                     "SUPPORT" => nil }
     playerList = matchinfo["participants"].select{|t| t["teamId"] == teamID}
     playerList.each do |player|
-      participantInfo = matchinfo["participantIdentities"].find{|p| p["participantId"] == player["participantId"]}
-      participantInfo = participantInfo["player"]
+      participant = matchinfo["participantIdentities"].find{|p| p["participantId"] == player["participantId"]}
+      participantInfo = participant["player"]
       updatedInfo = player.merge(participantInfo)
-      currentPlayer = MatchParticipant.new
+      currentPlayer = MatchDetails::MatchParticipant.new
       currentPlayer.generate(updatedInfo)
       teamPlayers["#{currentPlayer.role}"] = currentPlayer
     end
@@ -184,6 +184,21 @@ module MatchDetails
       else
         return nil
       end
+    end
+  end
+  
+  def find_img(data, type)
+    case
+    when type =="champion"
+      stuff
+    when type == "summonerSpell"
+      stuff
+    when type == "item"
+      stuff
+    when type == "mastery"
+      stuff
+    when type == ""
+      stuff
     end
   end
 end
