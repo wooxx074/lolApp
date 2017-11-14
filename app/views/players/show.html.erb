@@ -2,10 +2,9 @@
   <div class="container">
     <div class="row">
       <div class="col-md-7 col-md-offset-1 main-match-list"> <!-- Column for scrolling match history -->
-        <% unless @sorted_matches.nil? %>
-          <% matches_generated = 0 %>
-          <% @sorted_matches.each do |match| %>
-          <%= render '/matches/match_show_form', game: match %>
+        <% unless @matchList.nil? %>
+          <% @matchLists.each do |match| %>
+          <%= render '/matches/match_show_form', player: @player, match: match %>
             </br>
           <% end %>
         <% else %>

@@ -111,9 +111,9 @@ module MatchDetails
       self.controlWards = args["stats"]["visionWardsBoughtInGame"]
       self.wardsPlaced = args["stats"]["wardsPlaced"]
       self.wardsKilled = args["stats"]["wardsKilled"]
-      self.creepscorePerMin = compile_csmin(args["timeline"])
-      self.creepscoreDiff = compile_CSDiff(args["timeline"])
-      self.expDiff = compile_EXPDiff(args["timeline"])
+      self.creepscorePerMin = compile_stat_deltas(args["timeline"]["creepsPerMinDeltas"])
+      self.creepscoreDiff = compile_stat_deltas(args["timeline"]["csDiffPerMinDeltas"])
+      self.expDiff = compile_stat_deltas(args["timeline"]["xpDiffPerMinDeltas"])
       self.role = find_role(args["timeline"])
       self.accountID = args["accountId"]
       self.summonerName = args["summonerName"]
@@ -148,25 +148,16 @@ module MatchDetails
       return totalCS
     end
     
-    def compile_csmin(timeline)
-      csMin = {"0-10" => timeline["creepsPerMinDeltas"]["0-10"],
-                "10-20" => timeline["creepsPerMinDeltas"]["10-20"],
-                "20-30" => timeline["creepsPerMinDeltas"]["20-30"]}
-      return csMin
-    end
-    
-    def compile_CSDiff(timeline)
-      csDiff = {"0-10" => timeline["csDiffPerMinDeltas"]["0-10"],
-                "10-20" => timeline["csDiffPerMinDeltas"]["10-20"],
-                "20-30" => timeline["csDiffPerMinDeltas"]["20-30"]}
-      return csDiff
-    end
-    
-    def compile_EXPDiff(timeline)
-      expDiff = {"0-10" => timeline["xpDiffPerMinDeltas"]["0-10"],
-          "10-20" => timeline["xpDiffPerMinDeltas"]["10-20"],
-          "20-30" => timeline["xpDiffPerMinDeltas"]["20-30"]}
-      return expDiff
+    def compile_stat_deltas(delta_stats)
+      statHash = {}
+      delta_stats = delta_stats.to_h
+      time_windows = ["0-10", "10-20", "20-30", "30-40", "40-50", "50-60"]
+      time_windows.each do |window|
+        stat = delta_stats[window] ||= 0
+        stat = stat.round(2)
+        statHash[window] = stat
+      end
+      return statHash
     end
     
     def find_role(timeline)

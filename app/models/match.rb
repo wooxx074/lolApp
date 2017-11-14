@@ -8,12 +8,16 @@ class Match < ApplicationRecord
   has_and_belongs_to_many :players
   
   # Dynamically initialize and set match_info JSON variables for simpler access
+  # def generate_match_details
+  #   matchInfo = MatchInfo.new(match_detail_arguments(self.match_info))
+  #   return matchInfo
+  # end
   after_initialize do
     args = match_detail_arguments(self.match_info)
     init_match_details(args)
     create_attr_reader_methods(args)
+    self.match_info = nil #remove json from model initialize for simpler reference
   end
-  
   private
   # Hash to organize JSON hash data for match details
   

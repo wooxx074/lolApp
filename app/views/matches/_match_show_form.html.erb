@@ -1,18 +1,8 @@
   <%# Thread.new do save_player_matches end %>
-  <!--Begin finding participant identities-->
-  <% participantId = 0 %>
-  <% @player.summonername.each do |smname, accountId| %>
-    <!--Find out which accountId is linked to this game using method found in player_helper-->
-    <% participantId = find_player_participation_id(game, accountId) %>
-    <% puts participantId %>
-  <% end %>
-  <!--End finding participant identities-->
-  <!-- pulling participantId's specific stats by pulling the corresponding array object -->
-  <!-- participantId starts at 1, but array starts at 0, hence the minus 1 -->
-  <% participant = game["match_info"]["participants"][participantId - 1] %>
-  <% stats = participant["stats"] %>
+  <!--Load player-specific stats using player helper method-->
+  <% player_stats = generate_player_stats(match, @player) %>
   <!-- call helper method to find the championId in Riot static API, using the championId saved in stats -->
-  <% champUsed = retrieve_champion(participant["championId"]) %>
+  <% champUsed = retrieve_champion(player_stats.championId) %>
   <div class="row">
     <div class="col-md-12 match-main-panel">
       <div row> <!-- Top row, showing win/loss, date, patch number -->

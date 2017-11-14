@@ -28,14 +28,18 @@ module PlayerHelper
   end
   
   # Identifiy which participant is the player
-  def player_stats(match, playerID)
+  def generate_player_stats(match, player)
     allParticipants = []
     [match.team1players, match.team2players].each do |team|
       team.each do |role, data|
         allParticipants << data
       end
     end
-    result = allParticipants.find {|p| p.accountID == playerID}
+    result = nil
+    player.summonername.each do |name, id|
+      #if nil, will skip and not override resuults for each summonername
+      result = allParticipants.find {|p| p.accountID == id} unless nil
+    end
     return result
   end
   

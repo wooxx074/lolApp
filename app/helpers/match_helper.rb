@@ -5,7 +5,6 @@ module MatchHelper
     return "7.15.1" #current_game_version - For some reason Riot current has rate limits on static api calls should return current_game_version
   end
   def retrieve_champion(id)
-
     champlist = json_parse("http://ddragon.leagueoflegends.com/cdn/#{current_game_version}/data/en_US/champion.json")
     #champlist is a json file of every champ in the game
     #cycle through each champ in champlist["data"], k is the champion, v is the data within the champion

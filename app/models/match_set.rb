@@ -1,23 +1,26 @@
 class MatchSet
   include MatchDetails
+  attr_reader :matchset
   
-  def pull_matches(player, numOfMatches)
-    #sort matches by game id because Riot's game ID are chronological
-    #simpler sort without digging into the ["match_info"]["gamecreation"] fields
-    #reverse so most recent matches come first
-    matchList = sortedMatches(player)
-    sortedList = matchList.first(numOfMatches)
-    parsedList = matchParse(sortedList)
-    return parsedList
+  def initialize(player, matchRange)
+    @matchset = pull_matches(player, matchRange)
   end
 
   
   private
-  def sortedMatches(player)
-    #Classes created from match_components.rb
+  def pull_matches(player, matchRange)
     unsortedList = player.matches
-    sortedList = unsortedList.sort_by {|match| match["game_id"].to_i }.reverse #sorts most recent to least
+    #sort matches by game id because Riot's game ID are chronological
+    #simpler sort without digging into the ["match_info"]["gamecreation"] fields
+    #reverse so most recent matches come first
+    sortedList = unsortedList.sort_by {|match| match["game_id"] }.reverse
     sortedList = sortedList.uniq #Remove any possible duplicates when multiple accounts are queried
+    collectedList = []
+    sortedList[matchRange].each do |match|
+      collectedList << match unless nil
+    end
+    
+    return collectedList
   end
   
 
