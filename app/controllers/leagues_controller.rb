@@ -25,30 +25,7 @@ class LeaguesController < ApplicationController
       redirect_to new_league_path
     end
   end
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Added show/view/edit pages to Leagues, Teams, Controllers. WIP
 
-  def edit
-    @league = League.find(params[:id])
-  end
-
-  def update
-    # Retrieve team from database
-    @league = Team.find( params[:id])
-    # Mass assign edited profile attributes and update
-    if @league.update_attributes(league_params)
-      flash[:success] = "#{@league.name} updated!"
-      redirect_to edit_league_path(id: params[:id])
-    else
-      render action :edit
-    end
-  end
-
-
-=======
->>>>>>> Added show/view/edit pages to Leagues, Teams, Controllers. WIP
   private
   def league_params
     params.require(:league).permit(:name, :avatar)

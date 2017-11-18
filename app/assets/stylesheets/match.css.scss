@@ -1,0 +1,48 @@
+.static-splash {
+  padding-left: 0px !important; //!important to override bootstrap properties. Pull right portrait/splash art closer to matchlist
+  margin-left: 0px !important;
+  float: left;
+}
+
+.match-border {
+  border: 2px solid black;
+  padding: 15px;
+}
+
+.match-main-panel {
+  width: 100%;
+  height: 120px;
+  height: 100px;
+  border: 1px solid black;
+}
+
+.main-match-list {
+  overflow-y: scroll;
+  height: 500px;
+}
+
+.top-match-panel {
+  margin-bottom: 5px;
+}
+
+.match-top-right-row {
+  text-align: right;
+}
+
+.champ-portrait {
+  display: inline-block;
+  height: 80px;
+  max-width: 80px;
+  float: right;
+  padding-right: 0 !important;
+  
+
+}
+
+.summoner-spells-keystone {
+  display: inline-block;
+  float: left;
+  height: 60px;
+  padding-left: 0 !important;
+
+}

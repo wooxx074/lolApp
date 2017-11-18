@@ -6,12 +6,21 @@
           <%= render '/matches/match_show_form', player: @player, match: match %>
             </br>
           <% end %>
-          <% else %>
+        <% else %>
+          <!-- sorted matches are nil if there are no games in the past 2 weeks -->
           <p>No current matches found</p>
         <% end %>
-
-      <ul><%= "Blue Team:" %></ul>
-      
+      </div>
+      <div class="col-md-3 static-splash"> <!-- first column to show static splash on left -->
+        <div id="loading_splash">
+          <% champUsed = Hash.new %> <!-- filler champUsed. Will actually need a player portrait -->
+          <% champUsed[:Maokai] = 1 %>
+          <% champSplash = "http://ddragon.leagueoflegends.com/cdn/img/champion/loading/#{champUsed["id"]}_0.jpg(s)" %>
+          <%= image_tag(champSplash, size:"275x500") %>
+        </div>
+        <div id="addt_info">
+          
+        </div>
+      </div>
     </div>
   </div>
-</div>

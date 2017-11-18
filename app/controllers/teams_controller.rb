@@ -25,10 +25,6 @@ class TeamsController < ApplicationController
     @team = Team.find(params[:id])
   end
 
-  # GET to /teams/:id/edit
-  def edit
-    @team = Team.find(params[:id])
-  end
 
   # PUT to /teams/:id
   def update

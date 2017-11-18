@@ -1,12 +1,9 @@
 class PlayersController < ApplicationController
+  #included playerhelper, as putting methods in helper is more organized for this case in my opinion
+  include ApplicationHelper
   include PlayerHelper
-  
-  def set_player_params
-    @params = params[:player].downcase
-  end
-  
+
   def new
-    # Add new players
     @player = Player.new
   end
 
@@ -16,7 +13,7 @@ class PlayersController < ApplicationController
       summonerlist = params[:player][:summonername].split(", ") #splits all summoner names as their own in array
       league = League.find(@player.team.league_id)
       summonerlist.each do |smname|
-        @player.summonername[smname] = retrieve_sumn_id(region_check(league.name), smname)
+        player.summonername[smname] = retrieve_sumn_id(region_check(league.name), smname)
       end
 
     # Saving team into database
@@ -32,46 +29,27 @@ class PlayersController < ApplicationController
     end
   end
 
-
   def show
-    @player = Player.friendly.find( params[:id].downcase ) #friendly find uses name as slug for url
-    match_list = []
-    @player.summonername.each do |sumname, accountId|
-      if accountId == 111
-        puts "Error #{accountId} - players_controller def show"
-      else
-        account_matches = Match.select{|game| game.pros_in_game.include?(accountId.to_s)}
-        match_list = account_matches + match_list
-        match_list = match_list.uniq #removes any duplicate entries in short list array
-      end
-    end
-    @sorted_matches = match_list.sort_by {|match| match["game_id"].to_i }.reverse!
+    #friendly find uses name as slug for url. .downcase because slugs are all lowercase
+    @player = Player.friendly.find( params[:id].downcase )
+    newMatchSet = MatchSet.new(@player, 0..4)
+    @matchList = newMatchSet.matchset
   end
 
   def edit
-    @player = Player.friendly.find( params[:id].downcase )
+    @player = Player.friendly.find( params[:id].downcase)
   end
 
   def update
     # Retrieve players from database
     @player = Player.friendly.find( params[:id].downcase)
+
     updatedParams = player_params.clone
-    summonerlist = params[:player][:summonername].split(", ")
-    league = League.find(@player.team.league_id)
-    summonerHash = Hash.new
-    summonerlist.each do |smname|
-      accountId = retrieve_sumn_id(region_check(league.name), smname)
-      unless accountId == 111
-        summonerHash[smname] = accountId
-      else 
-        summonerHash[smname] = @player.summonername[smname]
-      end
-    end
-    updatedParams[:summonername] = summonerHash
-    
+    summonerlist = params[:player][:summonername].split(", ") #Split each name in form to array
+
     # Mass assign edited profile attributes and update
     if @player.update_attributes(updatedParams)
-      
+      #Signal update was successful or else return to edit page
       flash[:success] = "#{@player.name} updated!"
       redirect_to edit_player_path(id: params[:id])
     else
@@ -82,5 +60,26 @@ class PlayersController < ApplicationController
   private
   def player_params
     params.require(:player).permit(:name,:summonername, :team_id, :role, :twitchtv, :avatar)
+  end
+  
+  def updated_params(player)
+    updatedParams = player_params.clone
+    #Summoner names in form would be an array of names, need to re-convert to hash in background
+    #clone params so that summoner names can be re-created
+    summonerList = params[:player][:summonername].split(", ") #Split each name in form to array
+    league = League.find(player.team.league_id) #Identify league they are in for region_check helper method
+    summonerHash = Hash.new #Create new hash to re-insert into params
+    summonerlist.each do |smname|
+      accountId = retrieve_sumn_id(region_check(league.name), smname)
+      unless accountId == 111 #111 is error code for no summoner ID found (API rate limit usually)
+        summonerHash[smname] = accountId
+      else
+        #If error, try to find previous corresponding account ID and add to this hash
+        summonerHash[smname] = @player.summonername[smname]
+        puts "Error 111, using previous account ID"
+      end
+    end
+    #re-insert new summonerHash into cloned params, then proceed with mass assign edited fields
+    updatedParams[:summonername] = summonerHash
   end
 end

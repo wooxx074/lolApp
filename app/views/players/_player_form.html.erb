@@ -17,10 +17,7 @@
         <%= t.select(:role, ["","TOP", "JUNGLE", "MID", "ADC", "SUPPORT"]) %>
     </div>
     <div class="form-group">
-        <%= t.label :role %><br/>
-        <%= t.select(:role, ["","TOP", "JUNGLE", "MID", "ADC", "SUPPORT"]) %>
-    </div>
-    <div class="form-group">
+
         <%= t.label :team %><br/>
         <%= t.select(:team_id, Team.all.collect {|t| [t.name, t.id]})%>
     </div>

@@ -18,3 +18,18 @@
  @import 'bootstrap';
  @import "font-awesome-sprockets";
  @import "font-awesome";
+
+.navbar-header {
+  float: left;
+  text-align: center;
+  width: 100%
+}
+
+.navbar-nav{
+  display: inline-block;
+  float: none;
+}
+
+.navbar-brand {
+  float:none;
+}

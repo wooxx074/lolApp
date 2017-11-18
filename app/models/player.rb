@@ -1,9 +1,11 @@
 class Player < ApplicationRecord
+  attr_accessor :player, :sorted_matches
   extend FriendlyId
   friendly_id :name, use: :slugged
   validates :name, :slug, presence: true
   serialize :summonername, Hash
   belongs_to :team
+  has_and_belongs_to_many :matches
   has_attached_file :avatar, 
                     :styles => { medium: "300x300>", thumb: "100x100>" }, 
                     :default_url => "/images/:style/missing.png"

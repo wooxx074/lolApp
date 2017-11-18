@@ -1,4 +1,12 @@
 class Match < ApplicationRecord
+<<<<<<< HEAD
+=======
+  require 'match_details'
+  include MatchDetails
+  serialize :match_info, JSON
+  serialize :match_timeline, JSON
+  serialize :pros_in_game, Array
+>>>>>>> refactoring
   serialize :champs_pro_played, Array
   validates_uniqueness_of :game_id
   validates_presence_of :match_info
