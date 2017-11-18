@@ -1,12 +1,10 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-        <%= save_player_matches %>
-        <% unless @sorted_matches.nil? %>
-          <% @sorted_matches.each do |match| %>
-          <%= render '/matches/match_show_form', game: match %>
-
-            <br/>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7 col-md-offset-1 main-match-list"> <!-- Column for scrolling match history -->
+        <% unless @matchList.nil? %>
+          <% @matchList.each do |match| %>
+          <%= render '/matches/match_show_form', player: @player, match: match %>
+            </br>
           <% end %>
           <% else %>
           <p>No current matches found</p>

@@ -1,24 +1,87 @@
-    <!--Begin finding participant identities-->
-    <% @player.summonername.each do |smname, accountId| %>
-      <!--Find out which accountId is linked to this game-->
-      <% if game.pros_in_game.include? accountId.to_s %> 
-        <% game["match_info"]["participantIdentities"].each do |participant| -#Cycle through participants to find matching ID-%>
-          <% if participant["player"]["accountId"] == accountId %>
-            <%= participantId = participant["participantId"] -#If match, save for future reference-%>
-            <% break else next -#Break loop as soon as ID is found-%>
-          <% end %>
-        <% end %>
-        <% break -#Second break out of main loop after ID is found-%>
-      <% end %>
-    <% end %>
-    <!--End finding participant identities-->
-    <% patch = game["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
-    <%= "Patch #{patch}" %>
-    <!-- Regex filtering above-->
-    <!-- [^.]* = as many non-period characters as possible-->
-    <!-- . = a period-->
-    <!-- [^.]* = as many non-period characters as possible-->
-    
-    <%= game["match_info"]["gameCreation"] %>
-    <%= game["game_id"] %>
-    <br/>
+  <%# Thread.new do save_player_matches end %>
+  <!--Load player-specific stats using player helper method-->
+  <% player_stats = generate_player_stats(match, @player) %>
+  <!-- call helper method to find the championId in Riot static API, using the championId saved in stats -->
+  <% champUsed = retrieve_champion(player_stats.championId) %>
+  <div class="row">
+    <div class="col-md-12 match-main-panel">
+      <div row> <!-- Top row, showing win/loss, date, patch number -->
+        <div class="col-md-6 top-match-panel">
+          <%= champUsed["name"] %> -
+          <!-- Identify whether player won. Method from PlayerHelper -->
+          <%= if player_team(player, match).win then "Victory" else "Defeat" end %> 
+        </div>
+        <div class="col-md-6 top-match-panel match-top-right-row">
+          <%= match.gameCreated %> -
+          <%= "Patch #{match.patchVersion}" %>
+        </div>
+      </div>
+      <br/>
+      <div class="row">
+        <div class="col-md-1">
+          <%= image_tag("/roleSymbols/#{player_stats.role}.png", size: '40x40') %>
+        </div>
+        <div class="col-md-2 champ-portrait">
+          <span>
+            <!-- call helper method to render an image_tag, using player's participantId found in line 11 -->
+            <% champData = retrieve_champion(player_stats.championId) %>
+            <%= riot_static_img("champion", champData["id"], "60x60") %>
+          </span>
+        </div>
+        <div class="col-md-1 summoner-spells-keystone">
+          <span>
+            <!-- Use summoner keys to render image tag -->
+            <%= riot_static_img("spell", retrieve_summoner(player_stats.summonerSpell1)["id"], "20x20") %><br/>
+            <%= riot_static_img("spell",retrieve_summoner(player_stats.summonerSpell2)["id"], "20x20") %><br/>
+            <!--Masteries deleted due to being outdated-->
+          </span>
+        </div>
+        <div class="stats col-md-2">
+          <div class="row">
+            <div class="col">
+              <%= "#{player_stats.kda["kills"]}/#{player_stats.kda["deaths"]}/#{player_stats.kda["assists"]}" %>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <% gameDuration = (match.gameTimeSeconds/60).to_f %>
+              <% csm = (player_stats.creepScore/gameDuration) %>
+              <%= "#{'%.2f' % csm} CS/Min" %>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <%= "Level #{player_stats.champLevel}"%>
+            </div>
+          </div>
+        </div>
+        <div class="items col-md-5">
+          <div class="row">
+            <div class="col">
+              <!-- Render image for each item. 7 items total including trinket. -->
+              <!-- Riot ddragon utilizes item number for database, hence no need to find key -->
+              <% player_stats.items.each do |item|%>
+                <%= riot_static_img("item", item, "30x30") %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-1">
+
+          <%= link_to "+", player_match_path(player_id: @player.name, match_id: 422) %>
+        </div>
+      </div>
+      <!--BANS <br/>-->
+      <!-- Find champion key through id, and render image_tag accordingly for each ban-->
+      <!-- Bans for blue side first, then bans for red side next -->
+      <%# game["match_info"]["teams"][0]["bans"].each do |ban| %>
+        <%# champBanId = retrieve_champion(ban["championId"]) %>
+        <%#= riot_static_img("champion", champBanId["id"], "30x30") %>
+      <%# end %>
+      <!--<br/>-->
+      <%# game["match_info"]["teams"][1]["bans"].each do |ban| %>
+        <%# champBanId = retrieve_champion(ban["championId"]) %>
+        <%#= riot_static_img("champion", champBanId["id"], "30x30") %>
+      <%# end %>
+    </div>
+  </div>
