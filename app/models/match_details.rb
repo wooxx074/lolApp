@@ -12,14 +12,33 @@ module MatchDetails
                     "MID" => nil,
                     "ADC" => nil,
                     "SUPPORT" => nil }
+    #Empty array to fit players that don't fit a role
+    undef_role_players = []
+    #Find all players on specific team
     playerList = matchinfo["participants"].select{|t| t["teamId"] == teamID}
     playerList.each do |player|
+      #Participant Identity info and match data are in separate hash keys. Combining both into updatedInfo
       participant = matchinfo["participantIdentities"].find{|p| p["participantId"] == player["participantId"]}
       participantInfo = participant["player"]
       updatedInfo = player.merge(participantInfo)
+      #For each player, create a new MatchParticipant struct from MatchDetails
       currentPlayer = MatchDetails::MatchParticipant.new
       currentPlayer.generate(updatedInfo)
-      teamPlayers["#{currentPlayer.role}"] = currentPlayer
+      #See if role of player fits the teamPlayers roles. If true and role is empty, fill hash slot with currentPlayer
+      if teamPlayers.key?("#{currentPlayer.role}") && teamPlayers["#{currentPlayer.role}"].nil?
+        teamPlayers["#{currentPlayer.role}"] = currentPlayer
+        else
+        #Else if there's no fit, put currentPlayer in undef_role_players array to be filled later
+        undef_role_players << currentPlayer unless currentPlayer.nil?
+      end
+    end
+    #Fill players with undefined roles. 
+    #Will not be exact, but ensures all players will be shown in match info
+    teamPlayers.each do |role, data|
+      if data.nil? 
+        teamPlayers[role] = undef_role_players[0]
+        undef_role_players.delete_at(0)
+      end
     end
     return teamPlayers
   end
@@ -73,17 +92,19 @@ module MatchDetails
   MatchParticipant = Struct.new(
     :participantId,
     :championId,
+    :team,
     :summonerSpell1,
     :summonerSpell2,
-    :masteries,
+    :runes,
     :items,
     :kda,
+    :largestMultiKill,
     :damageDealt,
     :amountHealed,
     :damageShielded,
     :goldEarned,
     :creepScore,
-    :champlevel,
+    :champLevel,
     :controlWards,
     :wardsPlaced,
     :wardsKilled,
@@ -91,23 +112,25 @@ module MatchDetails
     :creepscoreDiff,
     :expDiff,
     :role,
-    :accountID,
+    :accountId,
     :summonerName
     ) do
     def generate(args)
       self.participantId = args["participantId"]
       self.championId = args["championId"]
+      self.team = args["teamId"]/100#Change team ID from e.g. 100 to 1
       self.summonerSpell1 = args["spell1Id"]
       self.summonerSpell2 = args["spell2Id"]
-      self.masteries = args["masteries"]
+      self.runes = compile_runes(args["stats"])
       self.items = compile_items(args["stats"])
       self.kda = compile_KDA(args["stats"])
+      self.largestMultiKill = args["stats"]["largestMultiKill"]
       self.damageDealt = args["stats"]["totalDamageDealtToChampions"]
       self.amountHealed = args["stats"]["totalHeal"]
       self.damageShielded = args["stats"]["damageSelfMitigated"]
       self.goldEarned = args["stats"]["goldEarned"]
       self.creepScore = compile_CS(args["stats"])
-      self.champlevel = args["stats"]["champLevel"]
+      self.champLevel = args["stats"]["champLevel"]
       self.controlWards = args["stats"]["visionWardsBoughtInGame"]
       self.wardsPlaced = args["stats"]["wardsPlaced"]
       self.wardsKilled = args["stats"]["wardsKilled"]
@@ -115,11 +138,24 @@ module MatchDetails
       self.creepscoreDiff = compile_stat_deltas(args["timeline"]["csDiffPerMinDeltas"])
       self.expDiff = compile_stat_deltas(args["timeline"]["xpDiffPerMinDeltas"])
       self.role = find_role(args["timeline"])
-      self.accountID = args["accountId"]
+      self.accountId = args["accountId"]
       self.summonerName = args["summonerName"]
     end
     
     private
+    def compile_runes(stats)
+      perks = {}
+      perks["primary"] = [stats["perkPrimaryStyle"],[]]
+      (0..3).each do |i|
+        perks["primary"][1] << stats["perk#{i}"]
+      end
+      perks["secondary"] = [stats["perkSubStyle"], []]
+      (4..5).each do |i|
+        perks["secondary"][1] << stats["perk#{i}"]
+      end
+      #Cycle through perk0 to perk5 and assign each to hash
+      return perks
+    end
     def compile_items(stats)
       itemArray = []
       (0..5).each do |x|

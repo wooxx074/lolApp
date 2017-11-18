@@ -5,7 +5,7 @@ class MatchSet
   def initialize(player, matchRange)
     @matchset = pull_matches(player, matchRange)
   end
-
+  
   
   private
   def pull_matches(player, matchRange)

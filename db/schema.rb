@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170728204904) do
+ActiveRecord::Schema.define(version: 20171117192936) do
 
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string   "slug",                      null: false
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 20170728204904) do
     t.datetime "created_at",                                       null: false
     t.datetime "updated_at",                                       null: false
     t.text     "champs_pro_played",           default: "--- []\n"
+    t.text     "match_timeline"
   end
 
   create_table "matches_players", id: false, force: :cascade do |t|

@@ -1,9 +1,8 @@
-  <%= save_player_matches %> <!-- Regenerate player matches in background thread -->
   <div class="container">
     <div class="row">
       <div class="col-md-7 col-md-offset-1 main-match-list"> <!-- Column for scrolling match history -->
         <% unless @matchList.nil? %>
-          <% @matchLists.each do |match| %>
+          <% @matchList.each do |match| %>
           <%= render '/matches/match_show_form', player: @player, match: match %>
             </br>
           <% end %>

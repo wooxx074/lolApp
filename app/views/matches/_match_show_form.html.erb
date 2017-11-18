@@ -6,83 +6,52 @@
   <div class="row">
     <div class="col-md-12 match-main-panel">
       <div row> <!-- Top row, showing win/loss, date, patch number -->
-        <div class="col-md-8 top-match-panel">
+        <div class="col-md-6 top-match-panel">
           <%= champUsed["name"] %> -
-          <% team_100_win = false %>
-          <% if game["match_info"]["teams"][0]["win"] == "Win" %> <!-- Identify whether blue team has won -->
-            <% team_100_win = true %>
-          <% end %>
-          <!-- Victory conditions: if player is participant 1-5(blue side) and team_100 win OR -->
-          <!-- if player is participant 6-10(red side) and team_100 lose -->
-          <!-- All other conditions are considered defeat -->
-          <!-- TODO: need to add elsif to account for remakes, not sure how API identifies remakes yet -->
-          <% if participantId < 6 && team_100_win || participantId > 6 && !team_100_win %>
-              <%= "Victory" %>
-            <% else %>
-              <%= "Defeat" %>
-          <% end %>
+          <!-- Identify whether player won. Method from PlayerHelper -->
+          <%= if player_team(player, match).win then "Victory" else "Defeat" end %> 
         </div>
-        <div class="col-md-4 top-match-panel match-top-right-row">
-          <% gameCreated = Time.at(game["match_info"]["gameCreation"]/1000) %>
-          <%= gameCreated.strftime("%B %e, %Y") %> -
-          <% patch = game["match_info"]["gameVersion"][/[^.]*.[^.]*/] %>
-          <%= "Patch #{patch}" %>
-          <!-- Regex filtering above-->
-          <!-- [^.]* = as many non-period characters as possible-->
-          <!-- . = a period-->
-          <!-- [^.]* = as many non-period characters as possible-->
+        <div class="col-md-6 top-match-panel match-top-right-row">
+          <%= match.gameCreated %> -
+          <%= "Patch #{match.patchVersion}" %>
         </div>
       </div>
       <br/>
       <div class="row">
         <div class="col-md-1">
-          <% participant_role = find_participant_role(participant["timeline"]) %>
-          <%= image_tag("/roleSymbols/#{participant_role}.png", size: '40x40') %>
-
-          <!--CS Diff/Min<br/>-->
-          <%#= "0-10 Min:  #{participant["timeline"]["creepsPerMinDeltas"]["0-10"]}" %>
-          <%#= "10-20 Min: #{participant["timeline"]["creepsPerMinDeltas"]["10-20"]}" %>
+          <%= image_tag("/roleSymbols/#{player_stats.role}.png", size: '40x40') %>
         </div>
         <div class="col-md-2 champ-portrait">
           <span>
             <!-- call helper method to render an image_tag, using player's participantId found in line 11 -->
-            <%= riot_static_img("champion", champUsed["id"], "60x60") %>
+            <% champData = retrieve_champion(player_stats.championId) %>
+            <%= riot_static_img("champion", champData["id"], "60x60") %>
           </span>
         </div>
         <div class="col-md-1 summoner-spells-keystone">
           <span>
-            <!-- Identify summoner spells chosen. Stats show spells via an integer ID. Retrieve_static_summs identifies spell key -->
-            <% summSpell1Key = retrieve_static_summs(participant["spell1Id"]) %>
-            <% summSpell2Key = retrieve_static_summs(participant["spell2Id"]) %>
             <!-- Use summoner keys to render image tag -->
-            <%= riot_static_img("spell", summSpell1Key, "20x20") %><br/>
-            <%= riot_static_img("spell", summSpell2Key, "20x20") %><br/>
-            <!-- search for keystone mastery using the first 3 numbers of mastery ID. Must be 616X, 626X, or 636X -->
-            <% participant["masteries"].each do |mastery| %>
-              <% current_mastery = mastery["masteryId"] %>
-              <% if [616, 626, 636].include? current_mastery/10 %>
-                <%= riot_static_img("mastery", current_mastery, "20x20") %>
-              <% end %>
-            <% end %>
+            <%= riot_static_img("spell", retrieve_summoner(player_stats.summonerSpell1)["id"], "20x20") %><br/>
+            <%= riot_static_img("spell",retrieve_summoner(player_stats.summonerSpell2)["id"], "20x20") %><br/>
+            <!--Masteries deleted due to being outdated-->
           </span>
         </div>
         <div class="stats col-md-2">
           <div class="row">
             <div class="col">
-              <%= "#{stats["kills"]}/#{stats["deaths"]}/#{stats["assists"]}" %>
+              <%= "#{player_stats.kda["kills"]}/#{player_stats.kda["deaths"]}/#{player_stats.kda["assists"]}" %>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <% creepscore = stats["totalMinionsKilled"] + stats["neutralMinionsKilled"] %>
-              <% gameDuration = game["match_info"]["gameDuration"]/60 %>
-              <% csm = (creepscore/gameDuration).round(2) %>
-              <%= "#{csm} CS/Min" %>
+              <% gameDuration = (match.gameTimeSeconds/60).to_f %>
+              <% csm = (player_stats.creepScore/gameDuration) %>
+              <%= "#{'%.2f' % csm} CS/Min" %>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <%= "Level #{stats["champLevel"]}"%>
+              <%= "Level #{player_stats.champLevel}"%>
             </div>
           </div>
         </div>
@@ -91,11 +60,8 @@
             <div class="col">
               <!-- Render image for each item. 7 items total including trinket. -->
               <!-- Riot ddragon utilizes item number for database, hence no need to find key -->
-              <% ([0, 1, 2, 6, 3, 4, 5]).each do |i| %>
-                <% if i == 3 %>
-                  <br/>
-                <% end %>
-                <%= riot_static_img("item", stats["item#{i}"], "30x30") %>
+              <% player_stats.items.each do |item|%>
+                <%= riot_static_img("item", item, "30x30") %>
               <% end %>
             </div>
           </div>
